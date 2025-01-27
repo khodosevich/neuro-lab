@@ -2,24 +2,33 @@ import { Provider } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { store } from '../store';
 import { Routes } from './routes';
-import { Box, CssBaseline } from '@mui/material';
-import './styles/index.scss';
+import { Box, CssBaseline, ThemeProvider } from '@mui/material';
+import './styles/base.scss';
 import Header from './components/Header.tsx';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
+import { darkTheme, lightTheme } from './theme.ts';
 
 const Main = () => {
 	const location = useLocation();
 	const excludedRoutes = ['/auth/sign-in', '/auth/sign-up', '/404'];
 	const isShowHeader = !excludedRoutes.includes(location.pathname);
 
+	const [isDarkMode, setIsDarkMode] = useState(false);
+
+	const toggleTheme = () => {
+		setIsDarkMode((prev) => !prev);
+	};
+
 	return (
 		<Fragment>
 			<Provider store={store}>
-				<CssBaseline/>
-				{isShowHeader && <Header/>}
-				<Box className="container">
-					<Routes/>
-				</Box>
+				<ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+					<CssBaseline/>
+					{isShowHeader && <Header onToggleTheme={ toggleTheme } isDarkMode={ isDarkMode }/>}
+					<Box className="container">
+						<Routes/>
+					</Box>
+				</ThemeProvider>
 			</Provider>
 		</Fragment>
 	);
