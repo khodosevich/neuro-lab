@@ -11,7 +11,7 @@ const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZi
 
 const supabase = createClient(URL, KEY);
 
-router.post('/register', async (req, res) => {
+router.post('/sign-up', async (req, res) => {
   const { email, password, username } = req.body;
 
   try {
@@ -30,14 +30,14 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/sign-in', async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return res.status(400).json({ error: 'Invalid credentials' });
 
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ email }, 'bsuir-top-matvey', { expiresIn: '1h' });
 
     res.status(200).json({ message: 'Login successful', token });
   } catch (err) {
