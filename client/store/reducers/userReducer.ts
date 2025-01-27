@@ -6,7 +6,6 @@ interface UserState {
     isAuth: boolean;
     user: {
         id: string | null;
-        name: string | null;
         email: string | null;
     };
 }
@@ -15,7 +14,6 @@ const inittialState: UserState = {
     isAuth: false,
     user: {
         id: null,
-        name: null,
         email: null
     }
 }
@@ -23,6 +21,7 @@ const inittialState: UserState = {
 export const userReducer = (state = inittialState, action: { type: string, payload: any }) => {
     switch (action.type) {
         case LOGIN:
+            console.log("LOGIN", action.payload);
             return {
                 ...state,
                 isAuth: true,
@@ -34,7 +33,7 @@ export const userReducer = (state = inittialState, action: { type: string, paylo
                 isAuth: false,
                 user: {
                     id: null,
-                    name: null,
+                    username: null,
                     email: null,
                 },
             };
