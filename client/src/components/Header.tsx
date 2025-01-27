@@ -1,9 +1,9 @@
-import { Box, Button } from '@mui/material';
+import { Box, Button, Switch } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/actios-creators/userAction.ts';
 
-const Header = () => {
+const Header = ({ onToggleTheme, isDarkMode }: { onToggleTheme: () => void; isDarkMode: boolean }) => {
 
 	const isAuth = useSelector((state: any) => state.user.isAuth);
 	const dispatch = useDispatch();
@@ -15,7 +15,7 @@ const Header = () => {
 	return (
 		<Box className="header">
 			<Box className="container" sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-				<Box className="header__logo" sx={{ color: 'white' }}>
+				<Box className="header__logo">
 					neuro-lab
 				</Box>
 
@@ -42,6 +42,10 @@ const Header = () => {
 						</Button>
 					</Box>
 				}
+
+				<Box>
+					<Switch checked={isDarkMode} onChange={onToggleTheme} />
+				</Box>
 			</Box>
 		</Box>
 	);

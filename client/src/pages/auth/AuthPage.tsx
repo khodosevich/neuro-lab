@@ -1,8 +1,5 @@
-import { Box } from '@mui/material';
-import Input from '../../ui/Input';
+import { Box, Button, Input, InputLabel, Typography } from '@mui/material';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Fragment } from 'react/jsx-runtime';
-import Button from '../../ui/Button.tsx';
 import { methods } from '../../api/methods.ts';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -71,39 +68,58 @@ const AuthPage = ({ type }: { type: string }) => {
 	}
 
 	return (
-		<Box className="auth-page">
-			<Box className="auth-page__wrapper">
+		<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+			<Box sx={{ display: 'flex', flexDirection: 'column', gap:'32px', padding: '32px', borderRadius: '12px' }}>
 				<Box className="auth-page__title">
-					<h1>{isSignIn ? 'Вход' : 'Регистрация'}</h1>
+					<Typography sx={{ textAlign: 'center' }} variant='h4'>{isSignIn ? 'Вход' : 'Регистрация'}</Typography>
 				</Box>
 
-				<Box className="auth-page__box">
-					<Input placeholder="Введите email" type="email"
-					       onChange={ (e) => { setEmail(e.target.value) }}
-					       label="Email" required value={email} />
+				<Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+					<Box>
+						<InputLabel required={true}>
+							Email
+						</InputLabel>
+						<Input placeholder="Введите email" type="email"
+						       onChange={ (e) => { setEmail(e.target.value) }}
+						       value={email}/>
+					</Box>
 					{
 						!isSignIn &&
-						<Input placeholder="Введите имя" type="text"
-						       onChange={ (e) => { setUsername(e.target.value) }}
-						       label="Имя" required value={username} />
+						<Box>
+							<InputLabel required={true}>
+								Имя
+							</InputLabel>
+							<Input placeholder="Введите имя" type="text"
+							       onChange={ (e) => { setUsername(e.target.value) }}
+							       value={username}/>
+						</Box>
 					}
-					<Input placeholder="Введите пароль" type="password"
-					       onChange={ (e) => { setPassword(e.target.value) }}
-					       label="Пароль" required value={password} />
+					<Box>
+						<InputLabel required={true}>
+							Пароль
+						</InputLabel>
+						<Input placeholder="Введите пароль" type="password"
+						       onChange={ (e) => { setPassword(e.target.value) }}
+						       value={password}/>
+					</Box>
 				</Box>
 
-				<Box className="auth-page__box" onClick={ authHandler }>
-					<Button label={isSignIn ? 'Войти' : 'Зарегистрироваться'}/>
+				<Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px' }} onClick={ authHandler }>
+					<Button>
+						{isSignIn ? 'Войти' : 'Зарегистрироваться'}
+					</Button>
 				</Box>
 
 				<Box sx={{ textAlign: 'center' }}>
 					{
 						isSignIn
-						? <NavLink to="/auth/sign-up">Зарегистрироваться</NavLink>
-						: <Fragment>
+						? <Typography>
+							<NavLink to="/auth/sign-up">Зарегистрироваться</NavLink>
+						</Typography>
+						: <Typography>
 							Уже есть аккаунт?&nbsp;
 							<NavLink to="/auth/sign-in">Войти</NavLink>
-						</Fragment>
+						</Typography>
 					}
 				</Box>
 
