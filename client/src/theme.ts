@@ -10,13 +10,20 @@ export const lightTheme = createTheme({
 			main: '#dc004e',
 		},
 		background: {
-			default: '#f5f5f5',
+			default: '#F9F9FA',
 			paper: '#fff',
 		},
 		text: {
 			primary: '#000',
 		},
 	},
+	typography: {
+		"fontFamily": `"Poppins", serif`,
+		"fontSize": 14,
+		"fontWeightLight": 300,
+		"fontWeightRegular": 400,
+		"fontWeightMedium": 500
+	}
 });
 
 export const darkTheme = createTheme({
@@ -29,11 +36,18 @@ export const darkTheme = createTheme({
 			main: '#f48fb1',
 		},
 		background: {
-			default: '#121212',
-			paper: '#1e1e1e',
+			default: '#474747',
+			paper: '#2A2A2A',
 		},
 		text: {
 			primary: '#fff',
 		},
 	},
+	typography: {
+		"fontFamily": `"Poppins", serif`,
+		"fontSize": 14,
+		"fontWeightLight": 300,
+		"fontWeightRegular": 400,
+		"fontWeightMedium": 500
+	}
 });

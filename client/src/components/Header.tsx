@@ -1,50 +1,58 @@
-import { Box, Button, Switch } from '@mui/material';
+import { Box, Button, Switch, useTheme } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/actios-creators/userAction.ts';
+import { CustomButton } from '../UI/CustomButton.tsx';
+import { CustomNavLink } from '../UI/StyledNavLink.tsx';
 
 const Header = ({ onToggleTheme, isDarkMode }: { onToggleTheme: () => void; isDarkMode: boolean }) => {
 
 	const isAuth = useSelector((state: any) => state.user.isAuth);
 	const dispatch = useDispatch();
+	const theme = useTheme();
 
 	const logoutHandler = () => {
 		dispatch(logout());
 	};
 
 	return (
-		<Box className="header">
-			<Box className="container" sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+		<Box sx={{ backgroundColor: theme.palette.background.default, paddingTop: '20px' }}>
+			<Box className="container" sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'space-between' }}>
 				<Box className="header__logo">
 					neuro-lab
 				</Box>
 
 				<Box className="header__menu" sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-					<NavLink to="/">
-						home
-					</NavLink>
-					<NavLink to="/auth/sign-in">
-						Войти
-					</NavLink>
-					<NavLink to="/auth/sign-up">
-						Регистрация
-					</NavLink>
-					<NavLink to="/profile">
-						Профиль
-					</NavLink>
+					<CustomNavLink to="/">
+						Home
+					</CustomNavLink>
+					<CustomNavLink to="/models">
+						Models
+					</CustomNavLink>
+					<CustomNavLink to="/profile">
+						Profile
+					</CustomNavLink>
 				</Box>
 
-				{
-					isAuth &&
+				<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+					{
+						isAuth ?
+						<Box>
+							<CustomButton sx={{ maxWidth: '100px', paddingBlock: '8px' }} onClick={logoutHandler}>
+								Log out
+							</CustomButton>
+						</Box>
+						       : <Box>
+							<Button variant="contained">
+								<NavLink style={{ color: '#fff' }} to="/auth/sign-in">
+									Sign In
+								</NavLink>
+							</Button>
+						</Box>
+					}
 					<Box>
-						<Button onClick={logoutHandler}>
-							logout
-						</Button>
+						<Switch checked={isDarkMode} onChange={onToggleTheme}/>
 					</Box>
-				}
-
-				<Box>
-					<Switch checked={isDarkMode} onChange={onToggleTheme} />
 				</Box>
 			</Box>
 		</Box>

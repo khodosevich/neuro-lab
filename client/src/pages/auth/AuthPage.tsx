@@ -1,4 +1,4 @@
-import { Box, Button, Input, InputLabel, Typography } from '@mui/material';
+import { Box, Button, Input, InputLabel, Typography, useTheme } from '@mui/material';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { methods } from '../../api/methods.ts';
 import { useState } from 'react';
@@ -6,12 +6,15 @@ import { useDispatch } from 'react-redux';
 import { login } from '../../../store/actios-creators/userAction.ts';
 import { UserCredentials, UserProfile } from '../../types/type.ts';
 import { jwtDecode } from 'jwt-decode';
+import CustomInput from '../../UI/CustomInput.tsx';
+import { CustomButton } from '../../UI/CustomButton.tsx';
 
 const AuthPage = ({ type }: { type: string }) => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [username, setUsername] = useState('');
 	const dispatch = useDispatch();
+	const theme = useTheme();
 
 	const navigate = useNavigate();
 
@@ -68,63 +71,51 @@ const AuthPage = ({ type }: { type: string }) => {
 	}
 
 	return (
-		<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-			<Box sx={{ display: 'flex', flexDirection: 'column', gap:'32px', padding: '32px', borderRadius: '12px' }}>
+		<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: theme.palette.background.default }}>
+			<Box sx={{ maxWidth: '700px', maxHeight: '680px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',  backgroundColor: theme.palette.background.paper, padding: '180px 64px', borderRadius: '32px' }}>
 				<Box className="auth-page__title">
-					<Typography sx={{ textAlign: 'center' }} variant='h4'>{isSignIn ? 'Вход' : 'Регистрация'}</Typography>
+					<Typography sx={{ textAlign: 'center' }} variant='h4'>{isSignIn ? 'Sign In' : 'Sign Up'}</Typography>
 				</Box>
 
 				<Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-					<Box>
-						<InputLabel required={true}>
-							Email
-						</InputLabel>
-						<Input placeholder="Введите email" type="email"
-						       onChange={ (e) => { setEmail(e.target.value) }}
-						       value={email}/>
-					</Box>
+					<CustomInput
+						label="Email"
+						placeholder="Enter email"
+						type="email"
+						onChange={(e) => setEmail(e.target.value)}
+						value={email}
+					/>
 					{
 						!isSignIn &&
-						<Box>
-							<InputLabel required={true}>
-								Имя
-							</InputLabel>
-							<Input placeholder="Введите имя" type="text"
-							       onChange={ (e) => { setUsername(e.target.value) }}
-							       value={username}/>
-						</Box>
+						<CustomInput
+							label="Username"
+							placeholder="Enter username"
+							type="text"
+							onChange={(e) => setUsername(e.target.value)}
+							value={username}
+						/>
 					}
-					<Box>
-						<InputLabel required={true}>
-							Пароль
-						</InputLabel>
-						<Input placeholder="Введите пароль" type="password"
-						       onChange={ (e) => { setPassword(e.target.value) }}
-						       value={password}/>
-					</Box>
+					<CustomInput
+						label="Password"
+						placeholder="Enter password"
+						type="password"
+						onChange={(e) => setPassword(e.target.value)}
+						value={password}
+					/>
 				</Box>
 
-				<Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px' }} onClick={ authHandler }>
-					<Button>
-						{isSignIn ? 'Войти' : 'Зарегистрироваться'}
-					</Button>
+				<Box sx={{ marginTop: '20px' }} onClick={ authHandler }>
+					<CustomButton>
+						{isSignIn ? 'Sign In' : 'Sign Up'}
+					</CustomButton>
 				</Box>
 
-				<Box sx={{ textAlign: 'center' }}>
+				<Box sx={{ marginTop: '20px'}}>
 					{
 						isSignIn
-						? <Typography>
-							<NavLink to="/auth/sign-up">Зарегистрироваться</NavLink>
-						</Typography>
-						: <Typography>
-							Уже есть аккаунт?&nbsp;
-							<NavLink to="/auth/sign-in">Войти</NavLink>
-						</Typography>
+						? <NavLink style={{ color: '#9F9FF8' }} to="/auth/sign-up">Sign Up</NavLink>
+						: <NavLink style={{ color: '#9F9FF8' }} to="/auth/sign-in">Sign In</NavLink>
 					}
-				</Box>
-
-				<Box sx={{textAlign: 'center'}}>
-					<NavLink to="/">На главную</NavLink>
 				</Box>
 			</Box>
 		</Box>
