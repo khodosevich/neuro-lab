@@ -1,96 +1,117 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { createClient } = require('@supabase/supabase-js');
 const pool = require('../utils/db');
 
 const router = express.Router();
-
-const URL = 'https://pkspfxpwfufzfgjnklwp.supabase.co';
-const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrc3BmeHB3ZnVmemZnam5rbHdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc2MTIxOTUsImV4cCI6MjA1MzE4ODE5NX0.GSLQUtrUz4bRMQj2JNfGIsTnPDjAyB_EHeP2YxjFjqw';
-
-const supabase = createClient(URL, KEY);
+const JWT_SECRET = 'random-1';
 
 router.post('/sign-up', async (req, res) => {
-  const { email, password, username } = req.body;
+	const { email, password, username } = req.body;
 
-  try {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) return res.status(400).json({ error: error.message });
+	try {
+		const existingEmailUser = await pool.query(
+			'SELECT * FROM users WHERE email = $1',
+			[email],
+		);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await pool.query(
-      'INSERT INTO users (email, username, password) VALUES ($1, $2, $3)',
-      [email, username, hashedPassword]
-    );
+		const existingUsernameUser = await pool.query(
+			'SELECT * FROM users WHERE username = $1',
+			[username],
+		);
 
-    res.status(201).json({ message: 'User registered successfully', data });
-  } catch (err) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
+		if (existingEmailUser.rows.length > 0) {
+			return res.status(400).json({ error: 'User with this email already exists' });
+		}
+
+		if (existingUsernameUser.rows.length > 0) {
+			return res.status(400).json({ error: 'Username already taken' });
+		}
+
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		const newUser = await pool.query(
+			`INSERT INTO users (email, username, password)
+             VALUES ($1, $2, $3) RETURNING id, email, username`,
+			[email, username, hashedPassword],
+		);
+
+		const token = jwt.sign(
+			{
+				userId: newUser.rows[0].id,
+				email: newUser.rows[0].email,
+				username: newUser.rows[0].username
+			}, JWT_SECRET,
+			{ expiresIn: '1h' });
+
+		res.status(201).json({
+			message: 'User registered successfully',
+			token
+		});
+	}
+	catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Internal server error' });
+	}
 });
 
 router.post('/sign-in', async (req, res) => {
-  const { email, password } = req.body;
+	const { email, password } = req.body;
 
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return res.status(400).json({ error: 'Invalid credentials' });
+	try {
+		const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
-    const token = jwt.sign({ email }, 'bsuir-top-matvey', { expiresIn: '1h' });
+		if (user.rows.length === 0) {
+			return res.status(400).json({ error: 'Invalid email or password' });
+		}
 
-    res.status(200).json({ message: 'Login successful', token });
-  } catch (err) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
+		const validPassword = await bcrypt.compare(password, user.rows[0].password);
+
+		if (!validPassword) {
+			return res.status(400).json({ error: 'Invalid email or password' });
+		}
+
+		const token = jwt.sign(
+			{
+				userId: user.rows[0].id,
+				email: user.rows[0].email,
+				username: user.rows[0].username,
+			},
+			JWT_SECRET,
+			{ expiresIn: '1h' },
+		);
+
+		res.status(200).json({
+			message: 'User signed in successfully',
+			token,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Internal server error' });
+	}
 });
 
 router.delete('/delete', async (req, res) => {
-  const { email } = req.body;
+	const { userId } = req.body;
 
-  try {
-    const { error } = await supabase.auth.admin.deleteUser(email);
-    if (error) return res.status(400).json({ error: error.message });
+	try {
+		const user = await pool.query(
+			'SELECT * FROM users WHERE id = $1',
+			[userId],
+		);
 
-    await pool.query('DELETE FROM users WHERE email = $1', [email]);
+		if (user.rows.length === 0) {
+			return res.status(404).json({ error: 'User not found' });
+		}
 
-    res.status(200).json({ message: 'User deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
+		await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+
+		res.status(200).json({ message: 'User deleted successfully' });
+	}
+	catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Internal server error' });
+	}
 });
-
-
-// Создание администратора
-router.get('/create-admin', async (req, res) => {
-  const { email, password, username } = {
-    "email": "testemail@gmail.com",
-    "password": "root1234",
-    "username": "adminUser"
-  };
-
-  console.log(email, password, username);
-
-  try {
-    // Проверяем, есть ли пользователь с таким email
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) return res.status(400).json({ error: error.message });
-
-    // Хэшируем пароль
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Добавляем пользователя с ролью "admin" в базу данных
-    await pool.query(
-      'INSERT INTO users (email, username, password) VALUES ($1, $2, $3)',
-      [email, username, hashedPassword]
-    );
-
-    res.status(201).json({ message: 'Admin user created successfully', data });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
 
 module.exports = router;
