@@ -7,6 +7,7 @@ import './styles/base.scss';
 import Header from './components/Header.tsx';
 import { Fragment, useState } from 'react';
 import { darkTheme, lightTheme } from './theme.ts';
+import CustomAlert from './UI/CustomAlert.tsx';
 
 const Main = () => {
 	const location = useLocation();
@@ -23,10 +24,13 @@ const Main = () => {
 	return (
 		<Fragment>
 			<Provider store={store}>
+				<Box sx={{ position: 'absolute', bottom: '10px', left: '10px', right: '10px' }}>
+					<CustomAlert/>
+				</Box>
 				<ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
 					<CssBaseline/>
 					<Box sx={{ backgroundColor: theme.palette.background.default }}>
-						{isShowHeader && <Header onToggleTheme={ toggleTheme } isDarkMode={ isDarkMode }/>}
+						{isShowHeader && <Header onToggleTheme={toggleTheme} isDarkMode={isDarkMode}/>}
 						<Routes/>
 					</Box>
 				</ThemeProvider>

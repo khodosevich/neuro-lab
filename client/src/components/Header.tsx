@@ -4,10 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/actios-creators/userAction.ts';
 import { CustomButton } from '../UI/CustomButton.tsx';
 import { CustomNavLink } from '../UI/StyledNavLink.tsx';
+import { RootState } from '../../store';
 
 const Header = ({ onToggleTheme, isDarkMode }: { onToggleTheme: () => void; isDarkMode: boolean }) => {
 
-	const isAuth = useSelector((state: any) => state.user.isAuth);
+	const isAuth = useSelector((state: RootState) => state.user.isAuth);
 	const dispatch = useDispatch();
 	const theme = useTheme();
 

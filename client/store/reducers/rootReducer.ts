@@ -1,10 +1,12 @@
 import { combineReducers } from "redux";
-import { counterReducer } from "./counter";
 import { userReducer } from "./userReducer";
+import { modelsReducer } from './modelsReducer.ts';
+import { alertReducer } from './alertReducer.ts';
 
 export const rootReducer = combineReducers({
-    counter: counterReducer,
-    user: userReducer
+    user: userReducer,
+    models: modelsReducer,
+    alert: alertReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

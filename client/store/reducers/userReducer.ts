@@ -5,8 +5,11 @@ export const UPDATE_USER = "UPDATE_USER";
 interface UserState {
     isAuth: boolean;
     user: {
-        id: string | null;
+        id: bigint | null;
         email: string | null;
+        username: string | null;
+        exp: number | null;
+        iat: number | null;
     };
 }
 
@@ -14,14 +17,16 @@ const inittialState: UserState = {
     isAuth: false,
     user: {
         id: null,
-        email: null
+        email: null,
+        username: null,
+        exp: null,
+        iat: null
     }
 }
 
 export const userReducer = (state = inittialState, action: { type: string, payload: any }) => {
     switch (action.type) {
         case LOGIN:
-            console.log("LOGIN", action.payload);
             return {
                 ...state,
                 isAuth: true,

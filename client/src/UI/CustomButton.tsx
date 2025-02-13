@@ -2,16 +2,16 @@ import { Button as BaseButton, buttonClasses } from '@mui/base/Button';
 import { styled } from '@mui/system';
 
 const black = {
-	50: '#e8e8e8',   // Светло-серый
-	100: '#d0d0d0',  // Серый
-	200: '#a8a8a8',  // Темно-серый
-	300: '#808080',  // Средний серый
-	400: '#585858',  // Темный серый
-	500: '#404040',  // Очень темный серый
-	600: '#303030',  // Почти черный
-	700: '#1c1c1c',  // Очень темный
-	800: '#0d0d0d',  // Угольный
-	900: '#000',  // Черный
+	50: '#e8e8e8',
+	100: '#d0d0d0',
+	200: '#a8a8a8',
+	300: '#808080',
+	400: '#585858',
+	500: '#404040',
+	600: '#303030',
+	700: '#1c1c1c',
+	800: '#0d0d0d',
+	900: '#000',
 };
 
 const grey = {
@@ -30,23 +30,22 @@ const grey = {
 export const CustomButton = styled(BaseButton)(
 	({ theme }) => `
   width: 320px;
-  font-family: 'IBM Plex Sans', sans-serif;
   font-weight: 600;
   font-size: 0.875rem;
   line-height: 1.5;
-  background-color: ${black[500]}; // Используем черный цвет
+  background-color: ${theme.palette.primary.main};
   padding-block: 14px;
   border-radius: 16px;
   color: white;
   transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease; 
   cursor: pointer;
-  border: 1px solid ${black[500]};
+  border: none;
   box-shadow: 0 2px 1px ${
 		theme.palette.mode === 'dark' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(45, 45, 60, 0.2)'
-	}, inset 0 1.5px 1px ${black[400]}, inset 0 -2px 1px ${black[600]};
+	};
 
   &:hover {
-    background-color: ${black[600]}; // Цвет при наведении
+    background-color: ${ theme.palette.mode === 'dark' ? grey[600] : grey[800]};
   }
 
   &.${buttonClasses.active} {

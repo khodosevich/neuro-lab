@@ -11,21 +11,19 @@ const api = axios.create({
 
 export const methods = {
 	auth: {
-		async signIn({ email, password, username }: UserCredentials) {
-			try {
-				return await api.post('/auth/sign-in', { email, password, username });
-			}
-			catch (error) {
-				console.log(error);
-			}
+		async signIn(user: UserCredentials) {
+			return await api.post('/auth/sign-in', user);
 		},
-		async signUp({ email, password, username }: UserCredentials) {
-			try {
-				return await api.post('/auth/sign-up', { email, password, username });
-			}
-			catch (error) {
-				console.log(error);
-			}
+		async signUp(user: UserCredentials) {
+			return await api.post('/auth/sign-up', user);
 		},
+		async deleteUser(userId: number) {
+			return await api.delete(`/auth/delete/${userId}`);
+		}
 	},
+	models: {
+		async getModelsList() {
+			return await api.get('/models/list');
+		}
+	}
 };
