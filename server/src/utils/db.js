@@ -1,11 +1,9 @@
 const { Pool } = require('pg');
+require('dotenv').config();
 
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'neuro-lab',
-    password: '1111',
-    port: 5433,
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 module.exports = pool;

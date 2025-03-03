@@ -1,10 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors'); // Подключаем CORS
-const userRoutes = require('./routes/auth');
-const testRoute = require('./routes/test');
-const modelsRoutes = require('./routes/models');
-const commentsRoutes = require('./routes/comments');
+const cors = require('cors');
+const userRoutes = require('./src/routes/userRoutes');
+const modelsRoutes = require('./src/routes/models');
+const commentsRoutes = require('./src/routes/comments');
+const authenticateToken = require('./src/middleware/authenticateToken');
 
 require('dotenv').config();
 
@@ -18,6 +18,14 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/auth') || req.path.startsWith('/models')) {
+    return next();
+  }
+  authenticateToken(req, res, next);
+});
+
 app.use('/auth', userRoutes);
 app.use('/models', modelsRoutes);
 app.use('/comments', commentsRoutes);
