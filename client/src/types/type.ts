@@ -1,18 +1,22 @@
-export interface UserCredentials {
+export type UserCredentials = {
 	email: string;
-	password: string;
+	password?: string;
 	username: string;
+	role?: string;
+	id?: number;
 }
 
-export interface UserProfile {
+export type UserProfile = {
 	userId: string;
 	email: string;
 	username: string;
 	exp: number;
 	iat: number;
+	created_at: string;
+	role: string;
 }
 
-export interface ModelsData {
+export type ModelsData = {
 	"id": number,
 	"name": string,
 	"description": string,
@@ -23,7 +27,7 @@ export interface ModelsData {
 	"updated_at": string
 }
 
-export interface AlertDate {
+export type AlertDate = {
 	isShowAlert: boolean;
 	type: 'success' | 'info' | 'warning' | 'error';
 	"message": string,

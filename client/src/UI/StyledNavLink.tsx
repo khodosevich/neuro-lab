@@ -2,9 +2,9 @@ import React, { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 import { styled } from '@mui/system';
 
-interface CustomNavLinkProps {
+type CustomNavLinkProps = {
 	to: string;
-	children: ReactNode; // Явно указываем тип для children
+	children: ReactNode;
 }
 
 const StyledNavLink = styled(NavLink)(

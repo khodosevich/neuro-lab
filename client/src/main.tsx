@@ -1,19 +1,19 @@
 import { Provider } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { store } from '../store';
 import { Routes } from './routes';
-import { Box, CssBaseline, ThemeProvider, useTheme } from '@mui/material';
+import { CssBaseline, ThemeProvider } from '@mui/material';
 import './styles/base.scss';
 import Header from './components/Header.tsx';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { darkTheme, lightTheme } from './theme.ts';
 import CustomAlert from './UI/CustomAlert.tsx';
+import Footer from './components/Footer.tsx';
+import { store } from './store';
 
 const Main = () => {
 	const location = useLocation();
-	const excludedRoutes = ['/auth/sign-in', '/auth/sign-up', '/404'];
+	const excludedRoutes = ['/login', '/register', '/404', '/chat'];
 	const isShowHeader = !excludedRoutes.includes(location.pathname);
-	const theme = useTheme();
 
 	const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -22,20 +22,19 @@ const Main = () => {
 	};
 
 	return (
-		<Fragment>
-			<Provider store={store}>
-				<Box sx={{ position: 'absolute', bottom: '10px', left: '10px', right: '10px' }}>
-					<CustomAlert/>
-				</Box>
-				<ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-					<CssBaseline/>
-					<Box sx={{ backgroundColor: theme.palette.background.default }}>
-						{isShowHeader && <Header onToggleTheme={toggleTheme} isDarkMode={isDarkMode}/>}
+		<Provider store={store}>
+			<ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+				<CssBaseline/>
+				<div className="page">
+					{isShowHeader && <Header onToggleTheme={toggleTheme} isDarkMode={isDarkMode}/>}
+					<main style={{ flexGrow: 1 }}>
 						<Routes/>
-					</Box>
-				</ThemeProvider>
-			</Provider>
-		</Fragment>
+					</main>
+					{isShowHeader && <Footer/>}
+				</div>
+				<CustomAlert/>
+			</ThemeProvider>
+		</Provider>
 	);
 };
 

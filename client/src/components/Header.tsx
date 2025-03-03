@@ -1,62 +1,67 @@
-import { Box, Button, Switch, useTheme } from '@mui/material';
+import { Box, Button, useTheme } from '@mui/material';
 import { NavLink } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../store/actios-creators/userAction.ts';
-import { CustomButton } from '../UI/CustomButton.tsx';
+import { useSelector } from 'react-redux';
 import { CustomNavLink } from '../UI/StyledNavLink.tsx';
-import { RootState } from '../../store';
+import { RootState } from '../store';
+import ThemeSwitch from '../UI/ThemeSwitch.tsx';
 
 const Header = ({ onToggleTheme, isDarkMode }: { onToggleTheme: () => void; isDarkMode: boolean }) => {
-
 	const isAuth = useSelector((state: RootState) => state.user.isAuth);
-	const dispatch = useDispatch();
 	const theme = useTheme();
 
-	const logoutHandler = () => {
-		dispatch(logout());
-	};
+	const links = [
+		{
+			path: '/models',
+			name: 'Модели',
+		},
+		{
+			path: '/datasets',
+			name: 'Датасеты',
+		},
+		{
+			path: '/chat',
+			name: 'Чат',
+		},
+		{
+			path: '/profile',
+			name: 'Профиль',
+		},
+	];
 
 	return (
-		<Box sx={{ backgroundColor: theme.palette.background.default, paddingTop: '20px' }}>
-			<Box className="container" sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'space-between' }}>
-				<Box className="header__logo">
+		<header style={{ backgroundColor: theme.palette.background.default, paddingTop: '20px' }}>
+			<Box className="container"
+			     sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'space-between', }}>
+				<NavLink to="/">
 					neuro-lab
-				</Box>
+				</NavLink>
 
 				<Box className="header__menu" sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-					<CustomNavLink to="/">
-						Home
-					</CustomNavLink>
-					<CustomNavLink to="/models">
-						Models
-					</CustomNavLink>
-					<CustomNavLink to="/profile">
-						Profile
-					</CustomNavLink>
+					{
+						links.map((link) => (
+							<CustomNavLink to={link.path} key={link.path}>
+								{link.name}
+							</CustomNavLink>
+						))
+					}
 				</Box>
 
 				<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
 					{
-						isAuth ?
+						!isAuth &&
 						<Box>
-							<CustomButton sx={{ maxWidth: '100px', paddingBlock: '8px' }} onClick={logoutHandler}>
-								Log out
-							</CustomButton>
-						</Box>
-						       : <Box>
 							<Button variant="contained">
-								<NavLink style={{ color: '#fff' }} to="/auth/sign-in">
-									Sign In
+								<NavLink to="/login">
+									Войти
 								</NavLink>
 							</Button>
 						</Box>
 					}
-					<Box>
-						<Switch checked={isDarkMode} onChange={onToggleTheme}/>
-					</Box>
+
+					<ThemeSwitch isDarkMode={isDarkMode} onToggleTheme={onToggleTheme}/>
 				</Box>
 			</Box>
-		</Box>
+		</header>
 	);
 };
 

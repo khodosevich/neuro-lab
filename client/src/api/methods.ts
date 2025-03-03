@@ -1,29 +1,29 @@
-import axios from 'axios';
+import api from './authMiddleware.ts';
 import { UserCredentials } from '../types/type.ts';
-
-const api = axios.create({
-	baseURL: 'http://localhost:5001',
-	headers: {
-		['Content-Type']: 'application/json; charset=utf8',
-		['Access-Control-Allow-Origin']: '*',
-	},
-});
 
 export const methods = {
 	auth: {
-		async signIn(user: UserCredentials) {
-			return await api.post('/auth/sign-in', user);
+		async login({ email, password }: UserCredentials) {
+			return await api.post('/auth/login', {
+				email,
+				password,
+			});
 		},
-		async signUp(user: UserCredentials) {
-			return await api.post('/auth/sign-up', user);
+		async register(user: UserCredentials) {
+			return await api.post('/auth/register', user);
 		},
 		async deleteUser(userId: number) {
-			return await api.delete(`/auth/delete/${userId}`);
+			return await api.delete(`/auth/users/${userId}`);
+		},
+		async logout() {
+			return await api.post(`/auth/logout`);
+		},
+		async getUserInfo(userId: number) {
+			return await api.get(`/auth/user/${userId}`);
+		},
+		async updateUser(user: UserCredentials) {
+			console.log(user);
+			return await api.put(`/auth/users/${user?.id}`, user);
 		}
 	},
-	models: {
-		async getModelsList() {
-			return await api.get('/models/list');
-		}
-	}
 };

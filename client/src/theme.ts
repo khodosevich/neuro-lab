@@ -4,7 +4,7 @@ export const lightTheme = createTheme({
 	palette: {
 		mode: 'light',
 		primary: {
-			main: '#000',
+			main: '#202020',
 		},
 		secondary: {
 			main: '#dc004e',
@@ -14,11 +14,11 @@ export const lightTheme = createTheme({
 			paper: '#fff',
 		},
 		text: {
-			primary: '#000',
+			primary: '#202020',
 		},
 	},
 	typography: {
-		"fontFamily": `"Poppins", serif`,
+		"fontFamily": `"Montserrat", serif`,
 		"fontSize": 14,
 		"fontWeightLight": 300,
 		"fontWeightRegular": 400,
@@ -44,7 +44,7 @@ export const darkTheme = createTheme({
 		},
 	},
 	typography: {
-		"fontFamily": `"Poppins", serif`,
+		"fontFamily": `"Montserrat", serif`,
 		"fontSize": 14,
 		"fontWeightLight": 300,
 		"fontWeightRegular": 400,
