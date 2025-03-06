@@ -23,9 +23,6 @@ export const ProtectedRoute = ({ isAuth, children }: { isAuth: boolean, children
 
 export const Routes = () => {
 	const isAuth = useSelector((state: RootState) => state.user.isAuth);
-
-	console.log(isAuth);
-
 	const dispatch = useDispatch();
 
 	useEffect(() => {

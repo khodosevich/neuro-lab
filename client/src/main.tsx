@@ -12,8 +12,8 @@ import { store } from './store';
 
 const Main = () => {
 	const location = useLocation();
-	const excludedRoutes = ['/login', '/register', '/404', '/chat'];
-	const isShowHeader = !excludedRoutes.includes(location.pathname);
+	const excludedRoutes = ['/login', '/register', '/404'];
+	const isShowHeader = !excludedRoutes.includes(location.pathname) && !location.pathname.startsWith('/chat');
 
 	const [isDarkMode, setIsDarkMode] = useState(false);
 

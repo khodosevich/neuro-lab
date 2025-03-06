@@ -1,12 +1,49 @@
-import { Box } from '@mui/material';
+import { Box, TextField } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
-const ChatBottom = () => {
+const ChatBottom = ({ chatId }: { chatId: string }) => {
+	console.log(chatId);
+
 	return (
 		<Box sx={{
-			display: 'flex', height: '300px',
-			padding: "20px", backgroundColor: "#00000033"
+			margin: '20px',
 		}}>
-			ChatBottom
+			<Box sx={{
+				display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+				backgroundColor: '#00000033', padding: '20px', borderRadius: '20px',
+			}}>
+				<Box sx={{
+					display: 'flex', alignItems: 'center', gap: '20px',
+					width: '100%', paddingRight: '10px',
+				}}>
+					<AddPhotoAlternateIcon sx={{
+						width: '35px',
+						height: '35px',
+					}}/>
+					<TextField
+						fullWidth
+						label="Введите сообщение"
+						variant="outlined"
+						sx={{
+							backgroundColor: '#2a2a2a',
+							borderRadius: '5px',
+							input: {
+								color: 'white',
+							},
+							label: {
+								color: 'white',
+								'&.Mui-focused': {
+									color: '#8a8a8a',
+								},
+							},
+						}}
+					/>
+				</Box>
+				<Box sx={{ display: 'flex' }}>
+					<SendIcon/>
+				</Box>
+			</Box>
 		</Box>
 	);
 };

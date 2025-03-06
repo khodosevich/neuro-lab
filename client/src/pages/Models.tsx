@@ -21,7 +21,7 @@ const Models = () => {
 
 				{
 					loading
-					? <Box className={'mavey'} sx={{ display: 'flex', justifyContent: 'center' }}>
+					? <Box sx={{ display: 'flex', justifyContent: 'center' }}>
 						<CircularProgress/>
 					</Box>
 					: <Grid container spacing={2}>

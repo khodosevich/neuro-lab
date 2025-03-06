@@ -17,14 +17,18 @@ export type UserProfile = {
 }
 
 export type ModelsData = {
-	"id": number,
-	"name": string,
-	"description": string,
-	"model_url": string,
-	"dataset_url": string,
-	"parameters": object[],
-	"created_at": string,
-	"updated_at": string
+	id: number,
+	name: string,
+	description: string,
+	model_url: string,
+	dataset_url: string,
+	parameters: object[],
+	created_at: string,
+	updated_at: string,
+}
+
+export type ModelSidebarType = {
+	item: ModelsData
 }
 
 export type AlertDate = {
