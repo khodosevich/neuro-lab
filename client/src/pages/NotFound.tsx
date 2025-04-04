@@ -1,13 +1,11 @@
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 
 const NotFound = () => {
-	const theme = useTheme();
-
 	return (
 		<Box sx={{ display: 'flex', flexDirection: 'column',
 			alignItems: 'center', justifyContent: 'center',
-			height: '100vh', color: theme.palette.text.primary }}
+			height: '100vh' }}
 		>
 			<Typography variant='h1' sx={{ fontSize:'80px' }}>
 				Такой страницы нет! - 404

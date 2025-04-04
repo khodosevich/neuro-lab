@@ -1,3 +1,4 @@
+import { logout } from '../store/slices/userSlice.ts';
 import { jwtDecode } from 'jwt-decode';
 import api from '../api/authMiddleware.ts';
 
@@ -8,7 +9,8 @@ export const checkAuth = async (dispatch: any, login: any) => {
 	if (!accessToken || !refreshToken) {
 		localStorage.removeItem('accessToken');
 		localStorage.removeItem('refreshToken');
-		return;
+		dispatch(logout());
+		return false;
 	}
 
 	try {
@@ -23,12 +25,16 @@ export const checkAuth = async (dispatch: any, login: any) => {
 
 			const userData = jwtDecode(data.accessToken);
 			dispatch(login(userData));
+			return true;
 		} else {
 			dispatch(login(decoded));
+			return true;
 		}
 	} catch (error) {
 		console.error('Ошибка при проверке токена:', error);
 		localStorage.removeItem('accessToken');
 		localStorage.removeItem('refreshToken');
+		dispatch(logout());
+		return false;
 	}
 };

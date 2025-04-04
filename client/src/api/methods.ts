@@ -1,5 +1,5 @@
 import api from './authMiddleware.ts';
-import { UserCredentials } from '../types/type.ts';
+import { CreateModelCommentType, ModelsData, NewModelData, UserCredentials } from '../types/type.ts';
 
 export const methods = {
 	auth: {
@@ -21,9 +21,41 @@ export const methods = {
 		async getUserInfo(userId: number) {
 			return await api.get(`/auth/user/${userId}`);
 		},
-		async updateUser(user: UserCredentials) {
-			console.log(user);
+		async updateUser(user: Partial<UserCredentials>) {
 			return await api.put(`/auth/users/${user?.id}`, user);
 		}
 	},
+	model: {
+		async createModel(data: NewModelData) {
+			return await api.post(`/models/create`, data);
+		},
+		async updateModel(id: number, data: ModelsData) {
+			return await api.put(`/models/update/${id}`, data);
+		},
+		async deleteModel(id: number) {
+			return await api.delete(`/models/delete/${id}`);
+		},
+		async getModelById(id: number) {
+			return await api.get(`/models/${id}`);
+		},
+		comment: {
+			async createComment(comment: CreateModelCommentType) {
+				return await api.post(`/comments/create`, comment);
+			},
+			async deleteComment(commentId: number) {
+				return await api.delete(`/comments/delete/${commentId}`);
+			},
+			async updateComment(comment: CreateModelCommentType) {
+				return await api.put(`/comments/update/${comment.modelId}`, comment);
+			},
+			async getComments({modelId}: CreateModelCommentType) {
+				return await api.get(`/comments/${modelId}`);
+			}
+		}
+	},
+	datasets: {
+		async getDatasets() {
+			return await api.get('/datasets/list');
+		}
+	}
 };

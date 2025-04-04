@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
 import { methods } from "../api/methods.ts";
 import React, { FormEvent, useState } from "react";
@@ -14,7 +14,6 @@ import { AppDispatch } from "../store";
 const AuthPage = ({ type }: { type: "login" | "register" }) => {
 	const isLogin = type === "login";
 	const dispatch = useDispatch<AppDispatch>();
-	const theme = useTheme();
 	const navigate = useNavigate();
 
 	const [userFormData, setUserFormData] = useState<UserCredentials>({
@@ -51,7 +50,7 @@ const AuthPage = ({ type }: { type: "login" | "register" }) => {
 				})
 			);
 
-			navigate("/profile");
+			navigate("/chat");
 		} catch (error: any) {
 			const errorMessage = error.response?.data?.error || "Произошла ошибка";
 			dispatch(
@@ -71,7 +70,6 @@ const AuthPage = ({ type }: { type: "login" | "register" }) => {
 				alignItems: "center",
 				justifyContent: "center",
 				minHeight: "100%",
-				backgroundColor: theme.palette.background.default,
 			}}
 		>
 			<Box
@@ -81,7 +79,6 @@ const AuthPage = ({ type }: { type: "login" | "register" }) => {
 					flexDirection: "column",
 					alignItems: "center",
 					justifyContent: "center",
-					backgroundColor: theme.palette.background.paper,
 					padding: '120px 64px',
 					borderRadius: "32px",
 					boxShadow: 3,
@@ -122,7 +119,7 @@ const AuthPage = ({ type }: { type: "login" | "register" }) => {
 				</form>
 
 				<Box sx={{ mt: 2 }}>
-					<NavLink style={{ color: theme.palette.primary.main }} to={isLogin ? "/register" : "/login"}>
+					<NavLink to={isLogin ? "/register" : "/login"}>
 						{isLogin ? "Регистрация" : "Войти"}
 					</NavLink>
 				</Box>

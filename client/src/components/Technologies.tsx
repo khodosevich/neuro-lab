@@ -1,4 +1,4 @@
-import { Box, useTheme } from '@mui/material';
+import { Box } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
@@ -15,8 +15,6 @@ import ts from '../assets/icons/ts.svg';
 
 
 const Technologies = () => {
-	const theme = useTheme();
-
 	const technologies = [
 		{ name: 'React', logo: reactSvg },
 		{ name: 'TypeScript', logo: ts },
@@ -30,7 +28,7 @@ const Technologies = () => {
 	];
 
 	return (
-		<Box sx={{ backgroundColor: theme.palette.background.default }}>
+		<Box>
 			<Box className='container' sx={{ paddingBlock: '60px' }}>
 				<Swiper
 					modules={[ Autoplay]}
@@ -43,7 +41,7 @@ const Technologies = () => {
 					navigation
 					loop={true}
 					breakpoints={{
-						640: {
+						320: {
 							slidesPerView: 1,
 							centeredSlides: true,
 						},

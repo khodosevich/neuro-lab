@@ -1,12 +1,10 @@
-import { Box, useTheme } from '@mui/material';
+import { Box } from '@mui/material';
 import Landing from '../components/Landing.tsx';
 import Technologies from '../components/Technologies.tsx';
 
 const Home = () => {
-	const theme = useTheme();
-
 	return (
-		<Box sx={{ backgroundColor: theme.palette.background.default }}>
+		<Box>
 			<Box className="container" sx={{
 				display: 'flex', flexDirection: 'column', gap: 2
 			}}>

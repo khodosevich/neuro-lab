@@ -3,8 +3,6 @@ import SendIcon from '@mui/icons-material/Send';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
 const ChatBottom = ({ chatId }: { chatId: string }) => {
-	console.log(chatId);
-
 	return (
 		<Box sx={{
 			margin: '20px',
@@ -12,6 +10,7 @@ const ChatBottom = ({ chatId }: { chatId: string }) => {
 			<Box sx={{
 				display: 'flex', alignItems: 'center', justifyContent: 'space-between',
 				backgroundColor: '#00000033', padding: '20px', borderRadius: '20px',
+
 			}}>
 				<Box sx={{
 					display: 'flex', alignItems: 'center', gap: '20px',

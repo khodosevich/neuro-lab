@@ -3,7 +3,7 @@ import ChatBody from '../components/chat/ChatBody.tsx';
 import ChatBottom from '../components/chat/ChatBottom.tsx';
 import { Box } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import ChatLanding from '../components/ChatLanding.tsx';
+import ChatLanding from '../components/chat/ChatLanding.tsx';
 
 const Chat = () => {
 	const { id } = useParams();

@@ -1,30 +1,82 @@
-import { Card, CardActions, CardContent, Typography } from '@mui/material';
-import { ModelsData } from '../../types/type.ts';
-import { NavLink } from 'react-router-dom';
+import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
+import { AlertType, ModelsData } from '../../types/type.ts';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { methods } from '../../api/methods.ts';
+import { deleteModel } from '../../store/slices/modelsSlice.ts';
+import { showAlert } from '../../store/slices/alertSlice.ts';
 
-const ModelCard = ({ model } : { model: ModelsData }) => {
+const ModelCard = ({ model }: { model: ModelsData }) => {
+	const isAdmin = useSelector((state: RootState) => state.user?.user?.role) === 'admin';
+	const dispatch = useDispatch();
 
-	console.log(model);
+	const handleDeleteModel = async () => {
+		try {
+			const response = await methods.model.deleteModel(model?.id);
+			dispatch(deleteModel(model?.id));
+
+			dispatch(
+				showAlert({
+					isShowAlert: true,
+					message: response.data.message,
+					type: AlertType.SUCCESS,
+				})
+			);
+		} catch (error) {
+			dispatch(
+				showAlert({
+					isShowAlert: true,
+					message: error.response.data.error,
+					type: AlertType.ERROR,
+				})
+			);
+		}
+	}
+
+	const navigate = useNavigate();
+	const handleUpdateModel = () => {
+		navigate(`/update-model/${model.id}`);
+	}
 
 	return (
-		<Card sx={{ minWidth: 345, maxWidth: 345 , height: "100%",
-			display: "flex", flexDirection: "column" }}
+		<Card sx={{
+			minWidth: 345, maxWidth: 345, height: '100%',
+			display: 'flex', flexDirection: 'column',
+		}}
 		>
 			<CardContent>
 				<Typography gutterBottom variant="h5" component="div">
-					{ model.name }
+					{model.name}
 				</Typography>
 				<Typography variant="body2" sx={{ color: 'text.secondary' }}>
-					{ model.description }
+					{model.description}
 				</Typography>
 			</CardContent>
-			<CardActions sx={{ flexGrow: 1, alignItems: "end" }}>
-				<NavLink to={`/models/${model.id}`}>
-					Попробовать
-				</NavLink>
-				<NavLink to={`/models/${model.id}`}>
-					Подробнее
-				</NavLink>
+			<CardActions sx={{ flexGrow: 1, alignItems: 'end' }}>
+				{
+					isAdmin
+					? <>
+						<Button variant="contained" color="success" onClick={handleUpdateModel}>
+							Обновить
+						</Button>
+						<Button variant="contained" color="secondary" onClick={handleDeleteModel}>
+							Удалить
+						</Button>
+					</>
+					: <>
+						<NavLink to={`/chat/${model.id}`}>
+							<Button size="small" variant="contained" color="primary">
+								Попробовать
+							</Button>
+						</NavLink>
+						<NavLink to={`/models/${model.id}`}>
+							<Button size="small" variant="contained" color="primary">
+								Подробнее
+							</Button>
+						</NavLink>
+					</>
+				}
 			</CardActions>
 		</Card>
 	);

@@ -6,7 +6,8 @@ export const fetchModelsList = createAsyncThunk<ModelsData[]>('models/fetchModel
 	try {
 		const response = await api.get('/models/list');
 		return response.data;
-	} catch (error: any) {
+	}
+	catch (error: any) {
 		return rejectWithValue(error.response?.data || 'Ошибка загрузки моделей');
 	}
 });
@@ -15,18 +16,36 @@ type ModelsState = {
 	models: ModelsData[];
 	loading: boolean;
 	error: string | null;
+	updateComments: boolean;
 }
 
 const initialState: ModelsState = {
 	models: [],
 	loading: false,
 	error: null,
+	updateComments: false,
 };
 
 const modelsSlice = createSlice({
 	name: 'models',
 	initialState,
-	reducers: {},
+	reducers: {
+		setUpdateComments: (state, action: PayloadAction<boolean>) => {
+			state.updateComments = action.payload;
+		},
+		addModel: (state, action: PayloadAction<ModelsData>) => {
+			state.models.unshift(action.payload);
+		},
+		deleteModel: (state, action: PayloadAction<number>) => {
+			state.models = state.models.filter(model => model.id !== action.payload);
+		},
+		updateModel: (state, action: PayloadAction<ModelsData>) => {
+			console.log('updateModel', action.payload);
+			state.models = state.models.map(model =>
+				model.id === action.payload.id ? { ...model, ...action.payload } : model,
+			);
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchModelsList.pending, (state) => {
@@ -44,4 +63,5 @@ const modelsSlice = createSlice({
 	},
 });
 
+export const { setUpdateComments, addModel, deleteModel, updateModel } = modelsSlice.actions;
 export default modelsSlice.reducer;

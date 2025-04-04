@@ -4,6 +4,7 @@ import { CustomButton } from '../UI/CustomButton.tsx';
 import { NavLink } from 'react-router-dom';
 
 const Landing = () => {
+
 	return (
 		<Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" ,
 			gap: "20px", paddingBlock: "60px", alignItems: "center",
