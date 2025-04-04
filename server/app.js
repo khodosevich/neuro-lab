@@ -4,6 +4,7 @@ const cors = require('cors');
 const userRoutes = require('./src/routes/userRoutes');
 const modelsRoutes = require('./src/routes/models');
 const commentsRoutes = require('./src/routes/comments');
+const datasets = require('./src/routes/datasets');
 const authenticateToken = require('./src/middleware/authenticateToken');
 
 require('dotenv').config();
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 app.use('/auth', userRoutes);
 app.use('/models', modelsRoutes);
 app.use('/comments', commentsRoutes);
+app.use('/datasets', datasets);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

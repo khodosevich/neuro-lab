@@ -1,9 +1,12 @@
 const express = require('express');
 const pool = require('../utils/db');
+const authenticateToken = require('../middleware/authenticateToken');
+const authorizeAdmin = require('../middleware/authorizeAdmin');
 
 const router = express.Router();
 
-router.post('/create', async (req, res) => {
+// 🔹 Создание модели (только для админов)
+router.post('/create', authenticateToken, authorizeAdmin, async (req, res) => {
 	const { name, description, modelUrl, datasetUrl, parameters } = req.body;
 
 	try {
@@ -11,7 +14,7 @@ router.post('/create', async (req, res) => {
 			`INSERT INTO models (name, description, model_url, dataset_url, parameters)
              VALUES ($1, $2, $3, $4, $5)
              RETURNING id, name, description, model_url, dataset_url, parameters, created_at, updated_at`,
-			[name, description, modelUrl, datasetUrl, parameters || null]
+			[name, description, modelUrl, datasetUrl, parameters || {}]
 		);
 
 		res.status(201).json({
@@ -24,7 +27,8 @@ router.post('/create', async (req, res) => {
 	}
 });
 
-router.delete('/delete/:id', async (req, res) => {
+// 🔹 Удаление модели (только для админов)
+router.delete('/delete/:id', authenticateToken, authorizeAdmin, async (req, res) => {
 	const { id } = req.params;
 
 	try {
@@ -43,7 +47,8 @@ router.delete('/delete/:id', async (req, res) => {
 	}
 });
 
-router.put('/update/:id', async (req, res) => {
+// 🔹 Обновление модели (только для админов)
+router.put('/update/:id', authenticateToken, authorizeAdmin, async (req, res) => {
 	const { id } = req.params;
 	const { name, description, modelUrl, datasetUrl, parameters } = req.body;
 
@@ -75,6 +80,7 @@ router.put('/update/:id', async (req, res) => {
 	}
 });
 
+// 🔹 Получение списка моделей (доступно всем)
 router.get('/list', async (req, res) => {
 	try {
 		const models = await pool.query('SELECT * FROM models ORDER BY created_at DESC');
@@ -85,11 +91,12 @@ router.get('/list', async (req, res) => {
 	}
 });
 
+// 🔹 Получение одной модели (доступно всем)
 router.get('/:id', async (req, res) => {
 	const { id } = req.params;
 
 	try {
-		const model = await pool.query('SELECT * FROM models WHERE id = $1', [id]);
+		const model = await pool.query('SELECT id, name, description, model_url, dataset_url, parameters, created_at FROM models WHERE id = $1', [id]);
 
 		if (model.rows.length === 0) {
 			return res.status(404).json({ error: 'Model not found' });

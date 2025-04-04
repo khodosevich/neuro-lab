@@ -12,7 +12,8 @@ const generateAccessToken = (user) => {
 };
 
 const generateRefreshToken = async (user) => {
-	const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_SECRET, { expiresIn: '7d' });
+	console.log('generateRefreshToken', user);
+	const refreshToken = jwt.sign({ id: user.id, role: user.role }, process.env.REFRESH_SECRET, { expiresIn: '7d' });
 
 	await pool.query('INSERT INTO refresh_tokens (user_id, token) VALUES ($1, $2) ON CONFLICT (token) DO NOTHING', [user.id, refreshToken]);
 
@@ -20,17 +21,20 @@ const generateRefreshToken = async (user) => {
 };
 
 router.post('/register', async (req, res) => {
-	const { username, password, email } = req.body;
+	const { username, password, email, role } = req.body;
 
 	if (!username || !password || !email) {
 		return res.status(400).json({ error: 'All fields are required' });
 	}
 
+	const allowedRoles = ['user', 'admin'];
+	const assignedRole = allowedRoles.includes(role) ? role : 'user';
+
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const result = await pool.query(
-			'INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING id, username, email, role',
-			[username, hashedPassword, email]
+			'INSERT INTO users (username, password, email, role) VALUES ($1, $2, $3, $4) RETURNING id, username, email, role',
+			[username, hashedPassword, email, assignedRole]
 		);
 
 		const newUser = result.rows[0];
@@ -119,30 +123,71 @@ router.get('/user/:id', authenticateToken, async (req, res) => {
 	const { id } = req.params;
 
 	try {
-		const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-		console.log(result);
+		const result = await pool.query('SELECT id, username, email, role FROM users WHERE id = $1', [id]);
+
+		if (result.rows.length === 0) {
+			return res.status(404).json({ error: 'User not found' });
+		}
+
 		return res.json(result.rows[0]);
 	} catch (error) {
+		console.error(error);
 		return res.status(500).json({ error: 'Internal server error' });
 	}
 });
 
 router.put('/users/:id', authenticateToken, async (req, res) => {
 	const { id } = req.params;
-	const updates = req.body;
+	const { oldPassword, password, ...updates } = req.body;
 
 	try {
 		const fields = Object.keys(updates).filter(key => updates[key] !== undefined);
 
-		if (fields.length === 0) {
+		if (fields.length === 0 && !password) {
 			return res.status(400).json({ error: 'No fields to update' });
 		}
 
-		const setClause = fields.map((field, index) => `${field} = $${index + 1}`).join(', ');
-		const values = fields.map(field => updates[field]);
+		if (updates.email || updates.username) {
+			const checkQuery = `
+                SELECT id FROM users WHERE (email = $1 OR username = $2) AND id != $3`;
+			const checkValues = [updates.email || null, updates.username || null, id];
+
+			const existingUser = await pool.query(checkQuery, checkValues);
+
+			if (existingUser.rows.length > 0) {
+				return res.status(409).json({ error: 'Email or username already in use' });
+			}
+		}
+
+		if (password) {
+			if (!oldPassword) {
+				return res.status(400).json({ error: 'Old password is required' });
+			}
+
+			const userQuery = await pool.query('SELECT password FROM users WHERE id = $1', [id]);
+			if (userQuery.rows.length === 0) {
+				return res.status(404).json({ error: 'User not found' });
+			}
+
+			const hashedPassword = userQuery.rows[0].password;
+
+			const isMatch = await bcrypt.compare(oldPassword, hashedPassword);
+			if (!isMatch) {
+				return res.status(401).json({ error: 'Incorrect old password' });
+			}
+
+			const saltRounds = 10;
+			updates.password = await bcrypt.hash(password, saltRounds);
+		}
+
+		const setClause = Object.keys(updates)
+			.map((field, index) => `${field} = $${index + 1}`)
+			.join(', ');
+
+		const values = Object.values(updates);
 
 		await pool.query(
-			`UPDATE users SET ${setClause} WHERE id = $${fields.length + 1}`,
+			`UPDATE users SET ${setClause} WHERE id = $${values.length + 1}`,
 			[...values, id]
 		);
 
