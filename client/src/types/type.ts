@@ -90,3 +90,11 @@ export type NewModelData = {
 		[key: string]: never;
 	};
 }
+
+export type UserType = {
+	id: number;
+	username: string;
+	email: string;
+	role: string;
+	created_at: string;
+}

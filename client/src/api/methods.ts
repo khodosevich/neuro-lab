@@ -12,17 +12,27 @@ export const methods = {
 		async register(user: UserCredentials) {
 			return await api.post('/auth/register', user);
 		},
-		async deleteUser(userId: number) {
-			return await api.delete(`/auth/users/${userId}`);
-		},
 		async logout() {
 			return await api.post(`/auth/logout`);
 		},
+	},
+	user: {
+		async deleteUser(userId: number) {
+			return await api.delete(`/user/${userId}`);
+		},
 		async getUserInfo(userId: number) {
-			return await api.get(`/auth/user/${userId}`);
+			return await api.get(`/user/userById/${userId}`);
 		},
 		async updateUser(user: Partial<UserCredentials>) {
-			return await api.put(`/auth/users/${user?.id}`, user);
+			return await api.put(`/user/${user?.id}`, user);
+		},
+		async getUsers() {
+			return await api.get(`/user/all`);
+		},
+		async updateUserRole(userId: number, role: string) {
+			return await api.put(`/user/${userId}/role`, {
+				role,
+			})
 		}
 	},
 	model: {

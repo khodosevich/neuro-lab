@@ -46,7 +46,7 @@ const Profile = () => {
 		}
 
 		try {
-			const response = await methods.auth.updateUser(payload);
+			const response = await methods.user.updateUser(payload);
 
 			if (response?.status === 200) {
 				dispatch(showAlert({ isShowAlert: true, message: 'Профиль обновлен', type: AlertType.SUCCESS }));
@@ -64,7 +64,7 @@ const Profile = () => {
 
 	const handleDeleteAccount = async () => {
 		try {
-			const response = await methods.auth.deleteUser(user!.id);
+			const response = await methods.user.deleteUser(user!.id);
 			if (response?.status === 200) {
 				logoutHandler();
 				dispatch(showAlert({ isShowAlert: true, message: response.data.message, type: AlertType.SUCCESS }));
@@ -83,7 +83,7 @@ const Profile = () => {
 
 	const fetchUserProfile = async () => {
 		try {
-			const response = await methods.auth.getUserInfo(user!.id);
+			const response = await methods.user.getUserInfo(user!.id);
 			if (response?.status === 200) {
 				dispatch(setUserProfile(response.data));
 				setCurrentUser(response.data);

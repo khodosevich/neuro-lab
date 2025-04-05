@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardActions, CardContent, TextField, Typography } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { methods } from '../api/methods.ts';
 import { deleteModel, updateModel } from '../store/slices/modelsSlice.ts';
@@ -109,6 +109,11 @@ const UpdateModelData = () => {
 		setNewModelData(prevState => ({ ...prevState, [field]: value }));
 	};
 
+	const navigate = useNavigate();
+	const handleCancel = () => {
+		navigate(-1);
+	}
+
 	return (
 		<Box className={'container'} sx={{ padding: 4 }}>
 			<Typography variant="h4" sx={{ marginBottom: 3 }}>
@@ -175,6 +180,9 @@ const UpdateModelData = () => {
 				}}>
 					<Button variant="contained" color="success" onClick={handleUpdateModel}>
 						Обновить данные
+					</Button>
+					<Button variant="contained" color="info" onClick={handleCancel}>
+						Отменить
 					</Button>
 					<Button variant="contained" color="secondary" onClick={handleDeleteModel}>
 						Удалить

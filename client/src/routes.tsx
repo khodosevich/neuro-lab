@@ -14,6 +14,7 @@ import { login } from './store/slices/userSlice.ts';
 import ModelInfo from './pages/Model.tsx';
 import DatasetsId from './pages/DatasetsId.tsx';
 import UpdateModelData from './pages/UpdateModelData.tsx';
+import Admin from './pages/Admin.tsx';
 
 export const ProtectedRoute = ({ isAuth, children }: { isAuth: boolean, children: JSX.Element }) => {
 	const [loading, setLoading] = useState(true);
@@ -66,6 +67,7 @@ export const Routes = () => {
 		{ path: '/datasets', element: <Datasets/> },
 		{ path: '/datasets/:id', element: <DatasetsId/> },
 		{ path: '/update-model/:id', element: <UpdateModelData/> },
+		{ path: '/admin', element: <Admin/> },
 		{ path: '/404', element: <NotFound/> },
 	]);
 };

@@ -1,6 +1,6 @@
 import { Box, Button, useTheme, IconButton } from '@mui/material';
 import { NavLink } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import { CustomNavLink } from '../UI/StyledNavLink.tsx';
@@ -8,6 +8,7 @@ import { RootState } from '../store';
 import ThemeSwitch from '../UI/ThemeSwitch.tsx';
 import { useMediaQuery } from '@mui/material';
 import BurgerMenu from './BurgerMenu.tsx';
+import { logout } from '../store/slices/userSlice.ts';
 
 const Header = ({ onToggleTheme, isDarkMode }: { onToggleTheme: () => void; isDarkMode: boolean }) => {
 	const isAuth = useSelector((state: RootState) => state.user.isAuth);
@@ -23,6 +24,13 @@ const Header = ({ onToggleTheme, isDarkMode }: { onToggleTheme: () => void; isDa
 	];
 
 	const toggleMenu = () => setMenuOpen(!menuOpen);
+
+	const dispatch = useDispatch();
+	const logoutHandler = () => {
+		localStorage.removeItem('accessToken');
+		localStorage.removeItem('refreshToken');
+		dispatch(logout());
+	};
 
 	return (
 		<header style={{ padding: '10px 0', borderBottom: "1px solid #e4e4e4" }}>
@@ -52,12 +60,16 @@ const Header = ({ onToggleTheme, isDarkMode }: { onToggleTheme: () => void; isDa
 				 )}
 
 				{
-					!isMobile && <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-						{!isAuth && (
-							<Button variant="contained" component={NavLink} to="/login">
+					!isMobile &&
+					<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+						{isAuth
+						 ? <Button variant={'outlined'} color={'info'} onClick={logoutHandler}>
+							 Выйти
+						 </Button>
+						 : <Button variant="contained" component={NavLink} to="/login">
 								Войти
 							</Button>
-						)}
+						}
 						<ThemeSwitch isDarkMode={isDarkMode} onToggleTheme={onToggleTheme}/>
 					</Box>
 				}

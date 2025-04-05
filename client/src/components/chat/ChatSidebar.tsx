@@ -6,6 +6,7 @@ import { fetchModelsList } from '../../store/slices/modelsSlice.ts';
 import SidebarModel from './sidebar/SidebarModel.tsx';
 import { NavLink } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import HomeIcon from '@mui/icons-material/Home';
 
 const ChatSidebar = () => {
 	const dispatch = useDispatch<AppDispatch>();
@@ -45,12 +46,24 @@ const ChatSidebar = () => {
 					))
 				}
 			</Box>
-			<NavLink to={'/profile'}>
-				<AccountCircleIcon sx={{
-					width: '35px',
-					height: '35px',
-				}}/>
-			</NavLink>
+			<Box sx={{
+				display: 'flex',
+				alignItems: 'center',
+				gap: '20px'
+			}}>
+				<NavLink to={'/'}>
+					<HomeIcon sx={{
+						width: '35px',
+						height: '35px',
+					}}/>
+				</NavLink>
+				<NavLink to={'/profile'}>
+					<AccountCircleIcon sx={{
+						width: '35px',
+						height: '35px',
+					}}/>
+				</NavLink>
+			</Box>
 		</Box>
 	);
 };
