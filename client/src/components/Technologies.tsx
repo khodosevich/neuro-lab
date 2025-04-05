@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
@@ -30,11 +30,15 @@ const Technologies = () => {
 	return (
 		<Box>
 			<Box className='container' sx={{ paddingBlock: '60px' }}>
+				<Typography variant="h3" component="h2" align="center" sx={{ mb: 6 }}>
+					Используемые технологии
+				</Typography>
 				<Swiper
 					modules={[ Autoplay]}
 					autoplay={{
-						delay: 1000,
-						disableOnInteraction: false
+						delay: 2000,
+						disableOnInteraction: false,
+						pauseOnMouseEnter: true
 					}}
 					spaceBetween={30}
 					slidesPerView={3}

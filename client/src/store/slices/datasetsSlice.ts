@@ -25,9 +25,20 @@ const datasetsSlice = createSlice({
 	reducers: {
 		setDatasets(state, action: PayloadAction<DatasetsType[]>) {
 			state.datasets = action.payload;
-		}
+		},
+		addDataset: (state, action: PayloadAction<DatasetsType>) => {
+			state.datasets.unshift(action.payload);
+		},
+		deleteDataset: (state, action: PayloadAction<number>) => {
+			state.datasets = state.datasets.filter(dataset => dataset.id !== action.payload);
+		},
+		updateDataset: (state, action: PayloadAction<DatasetsType>) => {
+			state.datasets = state.datasets.map(dataset =>
+				dataset.id === action.payload.id ? { ...dataset, ...action.payload } : dataset,
+			);
+		},
 	}
 });
 
-export const { setDatasets } = datasetsSlice.actions;
+export const { setDatasets, addDataset, deleteDataset, updateDataset } = datasetsSlice.actions;
 export default datasetsSlice.reducer;

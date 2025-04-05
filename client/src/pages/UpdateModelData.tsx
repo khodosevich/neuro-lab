@@ -31,6 +31,16 @@ const UpdateModelData = () => {
 		updated_at: '',
 	});
 
+	const [errors, setErrors] = useState({
+		name: '',
+		description: '',
+		model_url: '',
+		dataset_url: '',
+		parameters: ''
+	});
+
+	const dispatch = useDispatch();
+
 	useEffect(() => {
 		const fetchModel = async () => {
 			if (!id) return;
@@ -39,12 +49,11 @@ const UpdateModelData = () => {
 				const response = await methods.model.getModelById(Number(id));
 				setCurrentModel(response.data);
 				setNewModelData(response.data);
-			}
-			catch (error) {
+			} catch (error: any) {
 				dispatch(
 					showAlert({
 						isShowAlert: true,
-						message: error.response.data.error,
+						message: error.response?.data?.error || 'Ошибка загрузки модели',
 						type: AlertType.ERROR,
 					}),
 				);
@@ -52,9 +61,63 @@ const UpdateModelData = () => {
 		};
 
 		fetchModel();
-	}, [id]);
+	}, [id, dispatch]);
 
-	const dispatch = useDispatch();
+	const navigate = useNavigate();
+
+	const validateFields = () => {
+		let isValid = true;
+		const newErrors = {
+			name: '',
+			description: '',
+			model_url: '',
+			dataset_url: '',
+			parameters: ''
+		};
+
+		if (!newModelData.name.trim()) {
+			newErrors.name = 'Название модели обязательно';
+			isValid = false;
+		} else if (newModelData.name.length < 3) {
+			newErrors.name = 'Название должно быть не менее 3 символов';
+			isValid = false;
+		}
+
+		if (!newModelData.description.trim()) {
+			newErrors.description = 'Описание модели обязательно';
+			isValid = false;
+		} else if (newModelData.description.length < 10) {
+			newErrors.description = 'Описание должно быть не менее 10 символов';
+			isValid = false;
+		}
+
+		if (!newModelData.model_url.trim()) {
+			newErrors.model_url = 'URL модели обязателен';
+			isValid = false;
+		} else if (!/^https?:\/\/.+/i.test(newModelData.model_url)) {
+			newErrors.model_url = 'URL должен начинаться с http:// или https://';
+			isValid = false;
+		}
+
+		if (!newModelData.dataset_url.trim()) {
+			newErrors.dataset_url = 'URL датасета обязателен';
+			isValid = false;
+		} else if (!/^https?:\/\/.+/i.test(newModelData.dataset_url)) {
+			newErrors.dataset_url = 'URL должен начинаться с http:// или https://';
+			isValid = false;
+		}
+
+		try {
+			JSON.parse(JSON.stringify(newModelData.parameters));
+		} catch (e) {
+			newErrors.parameters = 'Некорректный формат параметров';
+			isValid = false;
+		}
+
+		setErrors(newErrors);
+		return isValid;
+	};
+
 	const handleDeleteModel = async () => {
 		try {
 			const response = await methods.model.deleteModel(Number(id));
@@ -63,16 +126,17 @@ const UpdateModelData = () => {
 			dispatch(
 				showAlert({
 					isShowAlert: true,
-					message: response.data.message,
+					message: response.data.message || 'Модель успешно удалена',
 					type: AlertType.SUCCESS,
 				}),
 			);
-		}
-		catch (error) {
+
+			navigate('/models');
+		} catch (error: any) {
 			dispatch(
 				showAlert({
 					isShowAlert: true,
-					message: error.response.data.error,
+					message: error.response?.data?.error || 'Ошибка при удалении модели',
 					type: AlertType.ERROR,
 				}),
 			);
@@ -80,44 +144,60 @@ const UpdateModelData = () => {
 	};
 
 	const handleUpdateModel = async () => {
+		if (!validateFields()) {
+			dispatch(
+				showAlert({
+					isShowAlert: true,
+					message: 'Пожалуйста, исправьте ошибки в форме',
+					type: AlertType.ERROR,
+				}),
+			);
+			return;
+		}
+
 		try {
-			const response = await methods.model.updateModel(Number(id), newModelData);
+			const response = await methods.model.updateModel(Number(id), {
+				...newModelData,
+				name: newModelData.name.trim(),
+				description: newModelData.description.trim(),
+				model_url: newModelData.model_url.trim(),
+				dataset_url: newModelData.dataset_url.trim()
+			});
 
 			dispatch(updateModel(response.data.model));
 
 			dispatch(
 				showAlert({
 					isShowAlert: true,
-					message: 'Модель обновлена успешно!',
+					message: 'Модель успешно обновлена!',
 					type: AlertType.SUCCESS,
 				}),
 			);
-		}
-		catch (error) {
+		} catch (error: any) {
 			setNewModelData(currentModel);
 			dispatch(
 				showAlert({
 					isShowAlert: true,
-					message: error.response.data.error,
+					message: error.response?.data?.error || 'Ошибка при обновлении модели',
 					type: AlertType.ERROR,
 				}),
 			);
 		}
 	};
 
-	const handleInputChange = (field: keyof ModelsData, value: string) => {
+	const handleInputChange = (field: keyof ModelsData, value: string | object) => {
 		setNewModelData(prevState => ({ ...prevState, [field]: value }));
+		setErrors(prev => ({ ...prev, [field]: '' }));
 	};
 
-	const navigate = useNavigate();
 	const handleCancel = () => {
 		navigate(-1);
-	}
+	};
 
 	return (
 		<Box className={'container'} sx={{ padding: 4 }}>
 			<Typography variant="h4" sx={{ marginBottom: 3 }}>
-				Обновление модели: { newModelData?.name }
+				Обновление модели: {newModelData?.name}
 			</Typography>
 			<Card>
 				<CardContent>
@@ -128,6 +208,9 @@ const UpdateModelData = () => {
 						margin="normal"
 						value={newModelData?.name || ''}
 						onChange={(e) => handleInputChange('name', e.target.value)}
+						error={!!errors.name}
+						helperText={errors.name}
+						required
 					/>
 					<TextField
 						label="Описание модели"
@@ -136,6 +219,11 @@ const UpdateModelData = () => {
 						margin="normal"
 						value={newModelData?.description || ''}
 						onChange={(e) => handleInputChange('description', e.target.value)}
+						error={!!errors.description}
+						helperText={errors.description}
+						required
+						multiline
+						rows={4}
 					/>
 					<TextField
 						label="Путь до модели"
@@ -144,6 +232,9 @@ const UpdateModelData = () => {
 						margin="normal"
 						value={newModelData?.model_url || ''}
 						onChange={(e) => handleInputChange('model_url', e.target.value)}
+						error={!!errors.model_url}
+						helperText={errors.model_url}
+						required
 					/>
 					<TextField
 						label="Датасет модели"
@@ -152,10 +243,12 @@ const UpdateModelData = () => {
 						margin="normal"
 						value={newModelData?.dataset_url || ''}
 						onChange={(e) => handleInputChange('dataset_url', e.target.value)}
+						error={!!errors.dataset_url}
+						helperText={errors.dataset_url}
+						required
 					/>
-					{/*сделать обновление параметров*/}
 					<TextField
-						label="Параметры модели"
+						label="Параметры модели (JSON)"
 						variant="outlined"
 						fullWidth
 						margin="normal"
@@ -164,12 +257,15 @@ const UpdateModelData = () => {
 							try {
 								const parsed = JSON.parse(e.target.value);
 								handleInputChange('parameters', parsed);
-							}
-							catch (error) {
-								console.log(error);
+								setErrors(prev => ({ ...prev, parameters: '' }));
+							} catch (error) {
+								setErrors(prev => ({ ...prev, parameters: 'Некорректный JSON' }));
 							}
 						}}
+						error={!!errors.parameters}
+						helperText={errors.parameters || 'Введите валидный JSON'}
 						multiline
+						rows={6}
 					/>
 				</CardContent>
 				<CardActions sx={{
@@ -184,7 +280,7 @@ const UpdateModelData = () => {
 					<Button variant="contained" color="info" onClick={handleCancel}>
 						Отменить
 					</Button>
-					<Button variant="contained" color="secondary" onClick={handleDeleteModel}>
+					<Button variant="contained" color="error" onClick={handleDeleteModel}>
 						Удалить
 					</Button>
 				</CardActions>

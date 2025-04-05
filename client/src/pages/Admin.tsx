@@ -1,4 +1,4 @@
-import { Box, Paper, Button, Stack, Typography } from '@mui/material';
+import { Box, Paper, Button, Typography } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { methods } from '../api/methods.ts';

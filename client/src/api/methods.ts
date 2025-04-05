@@ -1,5 +1,5 @@
 import api from './authMiddleware.ts';
-import { CreateModelCommentType, ModelsData, NewModelData, UserCredentials } from '../types/type.ts';
+import { CreateModelCommentType, DatasetsType, ModelsData, NewDatasetType, NewModelData, UserCredentials } from '../types/type.ts';
 
 export const methods = {
 	auth: {
@@ -66,6 +66,18 @@ export const methods = {
 	datasets: {
 		async getDatasets() {
 			return await api.get('/datasets/list');
+		},
+		async createDataset(dataset: NewDatasetType) {
+			return await api.post('/datasets/create', dataset);
+		},
+		async getDatasetById(id: number) {
+			return await api.get(`/datasets/${id}`);
+		},
+		async updateDataset(dataset: DatasetsType) {
+			return await api.put(`/datasets/update/${dataset.id}`, dataset)
+		},
+		async deleteDataset(id: number) {
+			return await api.delete(`/datasets/delete/${id}`);
 		}
 	}
 };

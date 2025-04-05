@@ -1,6 +1,6 @@
 import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
 import { AlertType, ModelsData } from '../../types/type.ts';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { methods } from '../../api/methods.ts';
@@ -21,23 +21,24 @@ const ModelCard = ({ model }: { model: ModelsData }) => {
 					isShowAlert: true,
 					message: response.data.message,
 					type: AlertType.SUCCESS,
-				})
+				}),
 			);
-		} catch (error) {
+		}
+		catch (error) {
 			dispatch(
 				showAlert({
 					isShowAlert: true,
 					message: error.response.data.error,
 					type: AlertType.ERROR,
-				})
+				}),
 			);
 		}
-	}
+	};
 
 	const navigate = useNavigate();
 	const handleUpdateModel = () => {
 		navigate(`/update-model/${model.id}`);
-	}
+	};
 
 	return (
 		<Card sx={{
@@ -65,16 +66,20 @@ const ModelCard = ({ model }: { model: ModelsData }) => {
 						</Button>
 					</>
 					: <>
-						<NavLink to={`/chat/${model.id}`}>
-							<Button size="small" variant="contained" color="primary">
-								Попробовать
-							</Button>
-						</NavLink>
-						<NavLink to={`/models/${model.id}`}>
-							<Button size="small" variant="contained" color="primary">
-								Подробнее
-							</Button>
-						</NavLink>
+						<Button component={Link}
+						        to={`/chat/${model.id}`}
+						        size="small"
+						        variant="contained"
+						        color="primary">
+							Попробовать
+						</Button>
+						<Button component={Link}
+						        to={`/models/${model.id}`}
+						        size="small"
+						        variant="contained"
+						        color="primary">
+							Подробнее
+						</Button>
 					</>
 				}
 			</CardActions>

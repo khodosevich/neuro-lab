@@ -15,6 +15,7 @@ import ModelInfo from './pages/Model.tsx';
 import DatasetsId from './pages/DatasetsId.tsx';
 import UpdateModelData from './pages/UpdateModelData.tsx';
 import Admin from './pages/Admin.tsx';
+import UpdateDataset from './pages/UpdateDataset.tsx';
 
 export const ProtectedRoute = ({ isAuth, children }: { isAuth: boolean, children: JSX.Element }) => {
 	const [loading, setLoading] = useState(true);
@@ -40,6 +41,15 @@ export const ProtectedRoute = ({ isAuth, children }: { isAuth: boolean, children
 	return children;
 };
 
+export const AdminRoute = ({ children }: { children: JSX.Element }) => {
+	const isAdmin = useSelector((state: RootState) => state.user?.user?.role) === 'admin';
+
+	if (!isAdmin) {
+		return <Navigate to="/" />;
+	}
+
+	return children;
+};
 
 export const Routes = () => {
 	const isAuth = useSelector((state: RootState) => state.user.isAuth);
@@ -66,8 +76,9 @@ export const Routes = () => {
 		{ path: '/chat/:id', element: <ProtectedRoute isAuth={isAuth}><Chat/></ProtectedRoute> },
 		{ path: '/datasets', element: <Datasets/> },
 		{ path: '/datasets/:id', element: <DatasetsId/> },
-		{ path: '/update-model/:id', element: <UpdateModelData/> },
-		{ path: '/admin', element: <Admin/> },
+		{ path: '/update-model/:id', element: <AdminRoute><UpdateModelData/></AdminRoute> },
+		{ path: '/admin', element: <AdminRoute><Admin/></AdminRoute> },
+		{ path: '/update-dataset/:id', element: <AdminRoute><UpdateDataset/></AdminRoute> },
 		{ path: '/404', element: <NotFound/> },
 	]);
 };

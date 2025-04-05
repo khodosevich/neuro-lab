@@ -85,7 +85,7 @@ export type NewModelData = {
 	name: string;
 	description: string;
 	modelUrl: string;
-	datasetUrl?: string;
+	datasetUrl: string;
 	parameters?: {
 		[key: string]: never;
 	};
@@ -97,4 +97,11 @@ export type UserType = {
 	email: string;
 	role: string;
 	created_at: string;
+}
+
+export type NewDatasetType = {
+	name: string;
+	description: string;
+	dataset_url: string;
+	model_id: number;
 }

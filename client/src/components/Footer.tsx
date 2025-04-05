@@ -13,7 +13,7 @@ const Footer = () => {
 	];
 
 	return (
-		<footer style={{ backgroundColor: '#202020', padding: '40px 0', color: theme.palette.background.default }}>
+		<footer style={{ backgroundColor: '#202020', padding: '40px 0', color: theme.palette.background.default, borderTop: '1px solid #fff' }}>
 			<Box className="container" sx={{
 				display: 'flex',
 				flexDirection: isMobile ? 'column' : 'row',
