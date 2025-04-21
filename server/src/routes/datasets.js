@@ -4,11 +4,11 @@ const pool = require('../../src/utils/db'); // Подключение к БД
 
 // Создание датасета
 router.post('/create', async (req, res) => {
-	const { name, description, dataset_url, model_id } = req.body;
+	const { name, description, data_url, model_id } = req.body;
 	try {
 		const newDataset = await pool.query(
-			'INSERT INTO datasets (name, description, dataset_url, model_id) VALUES ($1, $2, $3, $4) RETURNING *',
-			[name, description, dataset_url, model_id]
+			'INSERT INTO datasets (name, description, data_url, model_id) VALUES ($1, $2, $3, $4) RETURNING *',
+			[name, description, data_url, model_id]
 		);
 		res.json(newDataset.rows[0]);
 	} catch (err) {
@@ -43,11 +43,11 @@ router.get('/:id', async (req, res) => {
 // Обновление датасета
 router.put('/update/:id', async (req, res) => {
 	const { id } = req.params;
-	const { name, description, dataset_url, model_id } = req.body;
+	const { name, description, data_url, model_id } = req.body;
 	try {
 		const updatedDataset = await pool.query(
-			'UPDATE datasets SET name = $1, description = $2, dataset_url = $3, model_id = $4, updated_at = NOW() WHERE id = $5 RETURNING *',
-			[name, description, dataset_url, model_id, id]
+			'UPDATE datasets SET name = $1, description = $2, data_url = $3, model_id = $4, updated_at = NOW() WHERE id = $5 RETURNING *',
+			[name, description, data_url, model_id, id]
 		);
 		if (updatedDataset.rows.length === 0) {
 			return res.status(404).json({ error: 'Dataset not found' });

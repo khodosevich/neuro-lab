@@ -50,7 +50,7 @@ router.delete('/delete/:id', authenticateToken, authorizeAdmin, async (req, res)
 // 🔹 Обновление модели (только для админов)
 router.put('/update/:id', authenticateToken, authorizeAdmin, async (req, res) => {
 	const { id } = req.params;
-	const { name, description, modelUrl, datasetUrl, parameters } = req.body;
+	const { name, description, model_url, dataset_url, parameters } = req.body;
 
 	try {
 		const updatedModel = await pool.query(
@@ -63,7 +63,7 @@ router.put('/update/:id', authenticateToken, authorizeAdmin, async (req, res) =>
                  updated_at = NOW()
              WHERE id = $6
              RETURNING id, name, description, model_url, dataset_url, parameters, created_at, updated_at`,
-			[name, description, modelUrl, datasetUrl, parameters, id]
+			[name, description, model_url, dataset_url, parameters, id]
 		);
 
 		if (updatedModel.rows.length === 0) {

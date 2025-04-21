@@ -1,92 +1,117 @@
 const express = require('express');
+const pool = require('../utils/db');
+const authenticateToken = require('../middleware/authenticateToken');
+
 const router = express.Router();
-const pool = require('../../src/utils/db'); // Подключение к БД
 
-// 📌 Создание новой заметки
-router.post('/create', async (req, res) => {
-	const { user_id, title, content } = req.body;
+// 🔹 Получение заметок для модели (только для авторизованных пользователей)
+router.get('/all', authenticateToken, async (req, res) => {
+	const { userId, modelId } = req.query;
 
-	if (!user_id || !title || !content) {
-		return res.status(400).json({ error: 'Все поля обязательны' });
+	try {
+		const notes = await pool.query(
+			`SELECT id, title, content, created_at, updated_at 
+       FROM notes 
+       WHERE user_id = $1 AND model_id = $2 
+       ORDER BY created_at DESC`,
+			[userId, modelId]
+		);
+
+		res.status(200).json(notes.rows);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Internal server error' });
+	}
+});
+
+// 🔹 Создание заметки (только для авторизованных пользователей)
+router.post('/', authenticateToken, async (req, res) => {
+	const { user_id, model_id, title, content } = req.body;
+
+	if (!title || !content) {
+		return res.status(400).json({ error: 'Title and content are required' });
 	}
 
 	try {
 		const newNote = await pool.query(
-			'INSERT INTO notes (user_id, title, content) VALUES ($1, $2, $3) RETURNING *',
-			[user_id, title, content]
+			`INSERT INTO notes (user_id, model_id, title, content)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, title, content, created_at, updated_at`,
+			[user_id, model_id, title, content]
 		);
-		res.status(201).json(newNote.rows[0]);
+
+		res.status(201).json({
+			message: 'Note created successfully',
+			note: newNote.rows[0]
+		});
 	} catch (err) {
-		res.status(500).json({ error: err.message });
+		console.error(err);
+		res.status(500).json({ error: 'Internal server error' });
 	}
 });
 
-// 📌 Получение списка всех заметок
-router.get('/list', async (req, res) => {
-	try {
-		const notes = await pool.query('SELECT * FROM notes ORDER BY created_at DESC');
-		res.json(notes.rows);
-	} catch (err) {
-		res.status(500).json({ error: err.message });
-	}
-});
-
-// 📌 Получение конкретной заметки по ID
-router.get('/:id', async (req, res) => {
+// 🔹 Обновление заметки (только владельцу заметки)
+router.put('/:id', authenticateToken, async (req, res) => {
 	const { id } = req.params;
+	const { user_id, title, content } = req.body;
 
 	try {
-		const note = await pool.query('SELECT * FROM notes WHERE id = $1', [id]);
+		// Проверяем, что заметка принадлежит пользователю
+		const existingNote = await pool.query(
+			'SELECT * FROM notes WHERE id = $1 AND user_id = $2',
+			[id, user_id]
+		);
 
-		if (note.rows.length === 0) {
-			return res.status(404).json({ error: 'Заметка не найдена' });
+		if (existingNote.rows.length === 0) {
+			return res.status(404).json({
+				error: 'Note not found or access denied'
+			});
 		}
 
-		res.json(note.rows[0]);
-	} catch (err) {
-		res.status(500).json({ error: err.message });
-	}
-});
-
-// 📌 Обновление заметки
-router.put('/update/:id', async (req, res) => {
-	const { id } = req.params;
-	const { title, content } = req.body;
-
-	if (!title || !content) {
-		return res.status(400).json({ error: 'Все поля обязательны' });
-	}
-
-	try {
 		const updatedNote = await pool.query(
-			'UPDATE notes SET title = $1, content = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
+			`UPDATE notes
+       SET title = COALESCE($1, title),
+           content = COALESCE($2, content),
+           updated_at = NOW()
+       WHERE id = $3
+       RETURNING id, title, content, created_at, updated_at`,
 			[title, content, id]
 		);
 
-		if (updatedNote.rows.length === 0) {
-			return res.status(404).json({ error: 'Заметка не найдена' });
-		}
-
-		res.json(updatedNote.rows[0]);
+		res.status(200).json({
+			message: 'Note updated successfully',
+			note: updatedNote.rows[0]
+		});
 	} catch (err) {
-		res.status(500).json({ error: err.message });
+		console.error(err);
+		res.status(500).json({ error: 'Internal server error' });
 	}
 });
 
-// 📌 Удаление заметки
-router.delete('/delete/:id', async (req, res) => {
+// 🔹 Удаление заметки (только владельцу заметки)
+router.delete('/:id', authenticateToken, async (req, res) => {
 	const { id } = req.params;
+	const { user_id } = req.body;
 
 	try {
-		const deletedNote = await pool.query('DELETE FROM notes WHERE id = $1 RETURNING *', [id]);
+		// Проверяем, что заметка принадлежит пользователю
+		const existingNote = await pool.query(
+			'SELECT * FROM notes WHERE id = $1 AND user_id = $2',
+			[id, user_id]
+		);
 
-		if (deletedNote.rows.length === 0) {
-			return res.status(404).json({ error: 'Заметка не найдена' });
+		if (existingNote.rows.length === 0) {
+			return res.status(404).json({
+				error: 'Note not found or access denied'
+			});
 		}
 
-		res.json({ message: 'Заметка удалена', note: deletedNote.rows[0] });
+		await pool.query('DELETE FROM notes WHERE id = $1', [id]);
+
+		res.status(200).json({ message: 'Note deleted successfully' });
 	} catch (err) {
-		res.status(500).json({ error: err.message });
+		console.error(err);
+		res.status(500).json({ error: 'Internal server error' });
 	}
 });
 
