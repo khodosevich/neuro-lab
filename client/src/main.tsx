@@ -15,7 +15,7 @@ const Main = () => {
 	const excludedRoutes = ['/login', '/register', '/404'];
 	const isShowHeader = !excludedRoutes.includes(location.pathname) && !location.pathname.startsWith('/chat');
 
-	const [isDarkMode, setIsDarkMode] = useState(false);
+	const [isDarkMode, setIsDarkMode] = useState(true);
 
 	const toggleTheme = () => {
 		setIsDarkMode((prev) => !prev);

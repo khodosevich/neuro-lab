@@ -61,10 +61,11 @@ const CreateNewModel = ({ newModel, setNewModel }: {
 		if (!modelData.modelUrl.trim()) {
 			newErrors.modelUrl = 'Ссылка на модель обязательна';
 			isValid = false;
-		} else if (!/^https?:\/\/.+/i.test(modelData.modelUrl)) {
-			newErrors.modelUrl = 'Некорректный URL (должен начинаться с http/https)';
-			isValid = false;
 		}
+		// else if (!/^https?:\/\/.+/i.test(modelData.modelUrl)) {
+		// 	newErrors.modelUrl = 'Некорректный URL (должен начинаться с http/https)';
+		// 	isValid = false;
+		// }
 
 		if (!modelData.datasetUrl.trim()) {
 			newErrors.datasetUrl = 'Ссылка на датасет обязательна';
@@ -103,7 +104,7 @@ const CreateNewModel = ({ newModel, setNewModel }: {
 			dispatch(
 				showAlert({
 					isShowAlert: true,
-					message: response.data.message || 'Модель успешно создана',
+					message: 'Модель успешно создана',
 					type: AlertType.SUCCESS,
 				})
 			);

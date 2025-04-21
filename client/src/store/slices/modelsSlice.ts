@@ -30,7 +30,9 @@ const modelsSlice = createSlice({
 	name: 'models',
 	initialState,
 	reducers: {
+		// создать commentSlise
 		setUpdateComments: (state, action: PayloadAction<boolean>) => {
+			console.log('action', action);
 			state.updateComments = action.payload;
 		},
 		addModel: (state, action: PayloadAction<ModelsData>) => {

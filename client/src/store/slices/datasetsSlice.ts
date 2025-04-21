@@ -12,7 +12,7 @@ const initialState: DatasetsState = {
 			model_id: 0,
 			name: '',
 			description: '',
-			dataset_url: '',
+			data_url: '',
 			created_at: '',
 			updated_at: '',
 		},

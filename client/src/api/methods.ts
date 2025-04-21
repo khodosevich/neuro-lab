@@ -1,5 +1,13 @@
 import api from './authMiddleware.ts';
-import { CreateModelCommentType, DatasetsType, ModelsData, NewDatasetType, NewModelData, UserCredentials } from '../types/type.ts';
+import {
+	CreateModelCommentType, CreateNoteParams,
+	DatasetsType, DeleteNoteParams, GetNotesParams,
+	ModelsData,
+	NewDatasetType,
+	NewModelData,
+	Note, UpdateNoteParams,
+	UserCredentials,
+} from '../types/type.ts';
 
 export const methods = {
 	auth: {
@@ -40,6 +48,7 @@ export const methods = {
 			return await api.post(`/models/create`, data);
 		},
 		async updateModel(id: number, data: ModelsData) {
+			console.log(data);
 			return await api.put(`/models/update/${id}`, data);
 		},
 		async deleteModel(id: number) {
@@ -50,6 +59,7 @@ export const methods = {
 		},
 		comment: {
 			async createComment(comment: CreateModelCommentType) {
+				console.log(comment);
 				return await api.post(`/comments/create`, comment);
 			},
 			async deleteComment(commentId: number) {
@@ -78,6 +88,25 @@ export const methods = {
 		},
 		async deleteDataset(id: number) {
 			return await api.delete(`/datasets/delete/${id}`);
+		}
+	},
+	notes: {
+		async getNotesForModel(params: GetNotesParams): Promise<Note[]> {
+			return await api.get('/notes/all', { params });
+		},
+		async createNote(params: CreateNoteParams): Promise<Note> {
+			return await api.post('/notes', params);
+		},
+		async updateNote(params: UpdateNoteParams): Promise<Note> {
+			return await api.put(`/notes/${params.id}`, params);
+		},
+		async deleteNote(params: DeleteNoteParams): Promise<void> {
+			return await api.delete(`/notes/${params.id}`, { data: params });
+		},
+	},
+	chat: {
+		async newFetchToModel(data: { modelId: number, inputText: string }): Promise<void> {
+			return await api.post('/python/generate', data);
 		}
 	}
 };

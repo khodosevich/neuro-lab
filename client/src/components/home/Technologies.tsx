@@ -3,15 +3,15 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
 
-import reactSvg from '../assets/icons/react.svg';
-import nodeJs from '../assets/icons/nodejs.svg';
-import docker from '../assets/icons/docker.svg';
-import gitlab from '../assets/icons/gitlab.svg';
-import mui from '../assets/icons/mui.svg';
-import pg from '../assets/icons/pg.svg';
-import python from '../assets/icons/python.svg';
-import reduxSvg from '../assets/icons/redux.svg';
-import ts from '../assets/icons/ts.svg';
+import reactSvg from '../../assets/icons/react.svg';
+import nodeJs from '../../assets/icons/nodejs.svg';
+import docker from '../../assets/icons/docker.svg';
+import gitlab from '../../assets/icons/gitlab.svg';
+import mui from '../../assets/icons/mui.svg';
+import pg from '../../assets/icons/pg.svg';
+import python from '../../assets/icons/python.svg';
+import reduxSvg from '../../assets/icons/redux.svg';
+import ts from '../../assets/icons/ts.svg';
 
 
 const Technologies = () => {

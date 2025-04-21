@@ -11,7 +11,7 @@ const CreateNewDataset = ({ newDataset, setNewDataset }: { newDataset: boolean, 
 	const [datasetData, setDatasetData] = useState<NewDatasetType>({
 		name: '',
 		description: '',
-		dataset_url: '',
+		data_url: '',
 		model_id: 0,
 	});
 
@@ -20,18 +20,19 @@ const CreateNewDataset = ({ newDataset, setNewDataset }: { newDataset: boolean, 
 		setDatasetData({
 			name: '',
 			description: '',
-			dataset_url: '',
+			data_url: '',
 			model_id: 0,
 		});
 		setErrors({
 			name: '',
 			description: '',
-			dataset_url: '',
+			data_url: '',
 			model_id: '',
 		});
 	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		console.log(e.target.name);
 		setDatasetData({ ...datasetData, [e.target.name]: e.target.value });
 		setErrors(prev => ({ ...prev, [e.target.name]: '' }));
 	};
@@ -39,7 +40,7 @@ const CreateNewDataset = ({ newDataset, setNewDataset }: { newDataset: boolean, 
 	const [errors, setErrors] = useState({
 		name: '',
 		description: '',
-		dataset_url: '',
+		data_url: '',
 		model_id: '',
 	});
 
@@ -59,11 +60,11 @@ const CreateNewDataset = ({ newDataset, setNewDataset }: { newDataset: boolean, 
 			isValid = false;
 		}
 
-		if (!datasetData.dataset_url.trim()) {
-			newErrors.dataset_url = 'Ссылка не может быть пустой';
+		if (!datasetData.data_url.trim()) {
+			newErrors.data_url = 'Ссылка не может быть пустой';
 			isValid = false;
-		} else if (!/^https?:\/\/.+/i.test(datasetData.dataset_url)) {
-			newErrors.dataset_url = 'Введите корректную ссылку (начинается с http/https)';
+		} else if (!/^https?:\/\/.+/i.test(datasetData.data_url)) {
+			newErrors.data_url = 'Введите корректную ссылку (начинается с http/https)';
 			isValid = false;
 		}
 
@@ -91,7 +92,7 @@ const CreateNewDataset = ({ newDataset, setNewDataset }: { newDataset: boolean, 
 				...datasetData,
 				name: datasetData.name.trim(),
 				description: datasetData.description.trim(),
-				dataset_url: datasetData.dataset_url.trim()
+				data_url: datasetData.data_url.trim()
 			});
 
 			dispatch(addDataset(response.data));
@@ -101,10 +102,10 @@ const CreateNewDataset = ({ newDataset, setNewDataset }: { newDataset: boolean, 
 				type: AlertType.SUCCESS
 			}));
 			handleClose();
-		} catch (error) {
+		} catch {
 			dispatch(showAlert({
 				isShowAlert: true,
-				message: error.response?.data?.error || 'Ошибка при создании датасета',
+				message: 'Ошибка при создании датасета',
 				type: AlertType.ERROR
 			}));
 		}
@@ -155,11 +156,11 @@ const CreateNewDataset = ({ newDataset, setNewDataset }: { newDataset: boolean, 
 					/>
 					<TextField
 						label="Ссылка на датасет"
-						name="dataset_url"
-						value={datasetData.dataset_url}
+						name="data_url"
+						value={datasetData.data_url}
 						onChange={handleChange}
-						error={!!errors.dataset_url}
-						helperText={errors.dataset_url}
+						error={!!errors.data_url}
+						helperText={errors.data_url}
 						required
 					/>
 					<TextField

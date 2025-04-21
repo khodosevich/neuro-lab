@@ -35,11 +35,11 @@ const Admin = () => {
 					}),
 				);
 			}
-			catch (error) {
+			catch {
 				dispatch(
 					showAlert({
 						isShowAlert: true,
-						message: error.response.data.error,
+						message: 'Ошибка при получении пользователей',
 						type: AlertType.SUCCESS,
 					}),
 				);
@@ -79,7 +79,7 @@ const Admin = () => {
 						setUsers(prev => prev.filter(u => u.id !== user.id));
 						dispatch(showAlert({ isShowAlert: true, message: 'Пользователь удален', type: AlertType.SUCCESS }));
 					}
-					catch (err) {
+					catch {
 						dispatch(showAlert({ isShowAlert: true, message: 'Ошибка удаления', type: AlertType.ERROR }));
 					}
 				};
@@ -95,7 +95,7 @@ const Admin = () => {
 						);
 						dispatch(showAlert({ isShowAlert: true, message: 'Права обновлены', type: AlertType.SUCCESS }));
 					}
-					catch (err) {
+					catch {
 						dispatch(showAlert({ isShowAlert: true, message: 'Ошибка обновления', type: AlertType.ERROR }));
 					}
 				};

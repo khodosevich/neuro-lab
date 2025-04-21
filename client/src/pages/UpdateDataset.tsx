@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardActions, CardContent, TextField, Typography } from '@mui/material';
+import { Box, Button, TextField, Typography, useTheme, Paper, Divider, Avatar, Grid } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { methods } from '../api/methods.ts';
@@ -6,34 +6,45 @@ import { deleteDataset, updateDataset } from '../store/slices/datasetsSlice.ts';
 import { showAlert } from '../store/slices/alertSlice.ts';
 import { AlertType, DatasetsType } from '../types/type.ts';
 import { useDispatch } from 'react-redux';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DatasetIcon from '@mui/icons-material/Dataset';
+import LinkIcon from '@mui/icons-material/Link';
+import DescriptionIcon from '@mui/icons-material/Description';
+import NumbersIcon from '@mui/icons-material/Numbers';
 
 const UpdateDataset = () => {
 	const { id } = useParams();
+	const theme = useTheme();
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+
 	const [currentDataset, setCurrentDataset] = useState<DatasetsType>({
 		id: 0,
 		name: '',
 		description: '',
-		dataset_url: '',
+		data_url: '',
 		model_id: 0,
 		created_at: '',
-		updated_at: ''
+		updated_at: '',
 	});
 
 	const [newDatasetData, setNewDatasetData] = useState<DatasetsType>({
 		id: 0,
 		name: '',
 		description: '',
-		dataset_url: '',
+		data_url: '',
 		model_id: 0,
 		created_at: '',
-		updated_at: ''
+		updated_at: '',
 	});
 
 	const [errors, setErrors] = useState({
 		name: '',
 		description: '',
 		dataset_url: '',
-		model_id: ''
+		model_id: '',
 	});
 
 	useEffect(() => {
@@ -44,7 +55,8 @@ const UpdateDataset = () => {
 				const response = await methods.datasets.getDatasetById(Number(id));
 				setCurrentDataset(response.data);
 				setNewDatasetData(response.data);
-			} catch (error: any) {
+			}
+			catch (error: any) {
 				dispatch(
 					showAlert({
 						isShowAlert: true,
@@ -56,10 +68,7 @@ const UpdateDataset = () => {
 		};
 
 		fetchDataset();
-	}, [id]);
-
-	const navigate = useNavigate();
-	const dispatch = useDispatch();
+	}, [id, dispatch]);
 
 	const validateFields = () => {
 		let isValid = true;
@@ -67,7 +76,7 @@ const UpdateDataset = () => {
 			name: '',
 			description: '',
 			dataset_url: '',
-			model_id: ''
+			model_id: '',
 		};
 
 		if (!newDatasetData.name.trim()) {
@@ -80,10 +89,10 @@ const UpdateDataset = () => {
 			isValid = false;
 		}
 
-		if (!newDatasetData.dataset_url.trim()) {
+		if (!newDatasetData.data_url.trim()) {
 			newErrors.dataset_url = 'Ссылка обязательна';
 			isValid = false;
-		} else if (!/^https?:\/\/.+/i.test(newDatasetData.dataset_url)) {
+		} else if (!/^https?:\/\/.+/i.test(newDatasetData.data_url)) {
 			newErrors.dataset_url = 'Некорректный URL (должен начинаться с http/https)';
 			isValid = false;
 		}
@@ -111,7 +120,8 @@ const UpdateDataset = () => {
 			);
 
 			navigate('/datasets');
-		} catch (error: any) {
+		}
+		catch (error: any) {
 			dispatch(
 				showAlert({
 					isShowAlert: true,
@@ -146,7 +156,8 @@ const UpdateDataset = () => {
 					type: AlertType.SUCCESS,
 				}),
 			);
-		} catch (error: any) {
+		}
+		catch (error: any) {
 			setNewDatasetData(currentDataset);
 			dispatch(
 				showAlert({
@@ -168,78 +179,169 @@ const UpdateDataset = () => {
 	};
 
 	return (
-		<Box className={'container'} sx={{ padding: 4 }}>
-			<Typography variant="h4" sx={{ marginBottom: 3 }}>
-				Обновление датасета: {newDatasetData?.name}
-			</Typography>
-			<Card>
-				<CardContent>
-					<TextField
-						label="Название датасета"
-						variant="outlined"
-						fullWidth
-						margin="normal"
-						value={newDatasetData?.name || ''}
-						onChange={(e) => handleInputChange('name', e.target.value)}
-						error={!!errors.name}
-						helperText={errors.name}
-						required
-					/>
-					<TextField
-						label="Описание датасета"
-						variant="outlined"
-						fullWidth
-						margin="normal"
-						value={newDatasetData?.description || ''}
-						onChange={(e) => handleInputChange('description', e.target.value)}
-						error={!!errors.description}
-						helperText={errors.description}
-						required
-						multiline
-						rows={3}
-					/>
-					<TextField
-						label="Ссылка на датасет"
-						variant="outlined"
-						fullWidth
-						margin="normal"
-						value={newDatasetData?.dataset_url || ''}
-						onChange={(e) => handleInputChange('dataset_url', e.target.value)}
-						error={!!errors.dataset_url}
-						helperText={errors.dataset_url}
-						required
-					/>
-					<TextField
-						label="ID модели"
-						variant="outlined"
-						fullWidth
-						margin="normal"
-						type="number"
-						value={newDatasetData?.model_id || 0}
-						onChange={(e) => handleInputChange('model_id', Number(e.target.value))}
-						error={!!errors.model_id}
-						helperText={errors.model_id}
-						required
-						inputProps={{ min: 1 }}
-					/>
-				</CardContent>
-				<CardActions sx={{
-					display: 'flex',
-					flexWrap: 'wrap',
-					alignItems: 'center',
-					gap: '10px',
+		<Box sx={{
+			maxWidth: 1200,
+			margin: '0 auto',
+			p: { xs: 2, md: 4 },
+		}}>
+			<Box sx={{
+				display: 'flex',
+				alignItems: 'center',
+				mb: 4,
+				gap: 2,
+			}}>
+				<Avatar sx={{
+					bgcolor: theme.palette.secondary.main,
+					width: 56,
+					height: 56,
 				}}>
-					<Button variant="contained" color="success" onClick={handleUpdateDataset}>
-						Обновить данные
+					<DatasetIcon fontSize="large"/>
+				</Avatar>
+				<Box>
+					<Typography variant="h4" sx={{ fontWeight: 600 }}>
+						Редактирование датасета
+					</Typography>
+					<Typography variant="body1" color="text.secondary">
+						ID: {newDatasetData?.id} | Последнее обновление:{new Date(newDatasetData?.updated_at).toLocaleDateString()}
+					</Typography>
+				</Box>
+			</Box>
+
+			<Paper sx={{
+				p: { xs: 2, md: 4 },
+				borderRadius: 4,
+				boxShadow: theme.shadows[2],
+			}}>
+				<Grid container spacing={4}>
+					{/* Основная информация */}
+					<Grid item xs={12} md={6}>
+						<Box sx={{ mb: 4 }}>
+							<Typography variant="h6" sx={{
+								mb: 2,
+								display: 'flex',
+								alignItems: 'center',
+								gap: 1,
+							}}>
+								<DescriptionIcon color="secondary"/> Описание датасета
+							</Typography>
+
+							<TextField
+								label="Название датасета"
+								variant="outlined"
+								fullWidth
+								margin="normal"
+								value={newDatasetData?.name || ''}
+								onChange={(e) => handleInputChange('name', e.target.value)}
+								error={!!errors.name}
+								helperText={errors.name}
+								required
+								sx={{ mb: 3 }}
+							/>
+
+							<TextField
+								label="Описание датасета"
+								variant="outlined"
+								fullWidth
+								margin="normal"
+								value={newDatasetData?.description || ''}
+								onChange={(e) => handleInputChange('description', e.target.value)}
+								error={!!errors.description}
+								helperText={errors.description}
+								required
+								multiline
+								rows={4}
+							/>
+						</Box>
+					</Grid>
+
+					{/* Ссылки и ID модели */}
+					<Grid item xs={12} md={6}>
+						<Box sx={{ mb: 4 }}>
+							<Typography variant="h6" sx={{
+								mb: 2,
+								display: 'flex',
+								alignItems: 'center',
+								gap: 1,
+							}}>
+								<LinkIcon color="secondary"/> Ссылки и привязки
+							</Typography>
+
+							<TextField
+								label="URL датасета"
+								variant="outlined"
+								fullWidth
+								margin="normal"
+								value={newDatasetData?.data_url || ''}
+								onChange={(e) => handleInputChange('data_url', e.target.value)}
+								error={!!errors.dataset_url}
+								helperText={errors.dataset_url}
+								required
+								sx={{ mb: 3 }}
+							/>
+
+							<TextField
+								label="ID связанной модели"
+								variant="outlined"
+								fullWidth
+								margin="normal"
+								type="number"
+								value={newDatasetData?.model_id || 0}
+								onChange={(e) => handleInputChange('model_id', Number(e.target.value))}
+								error={!!errors.model_id}
+								helperText={errors.model_id}
+								required
+								inputProps={{ min: 1 }}
+								InputProps={{
+									startAdornment: (
+										<NumbersIcon sx={{
+											color: theme.palette.action.active,
+											mr: 1,
+										}}/>
+									),
+								}}
+							/>
+						</Box>
+					</Grid>
+				</Grid>
+
+				<Divider sx={{ my: 4 }}/>
+
+				<Box sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					flexWrap: 'wrap',
+					gap: 2,
+				}}>
+					<Button
+						variant="contained"
+						color="primary"
+						startIcon={<SaveIcon/>}
+						onClick={handleUpdateDataset}
+						sx={{ minWidth: 200 }}
+					>
+						Сохранить изменения
 					</Button>
-					<Button variant="contained" color="info" onClick={handleCancel}>
-						Отменить
-					</Button>
-					<Button variant="contained" color="error" onClick={handleDeleteDataset}>
-						Удалить
-					</Button>
-				</CardActions>
-			</Card>
+
+					<Box sx={{ display: 'flex', gap: 2 }}>
+						<Button
+							variant="outlined"
+							startIcon={<CancelIcon/>}
+							onClick={handleCancel}
+						>
+							Отменить
+						</Button>
+
+						<Button
+							variant="outlined"
+							color="error"
+							startIcon={<DeleteIcon/>}
+							onClick={handleDeleteDataset}
+						>
+							Удалить датасет
+						</Button>
+					</Box>
+				</Box>
+			</Paper>
 		</Box>
 	);
 };

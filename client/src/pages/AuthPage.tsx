@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
 import { methods } from "../api/methods.ts";
 import React, { FormEvent, useState } from "react";
@@ -12,6 +12,7 @@ import { login } from "../store/slices/userSlice.ts";
 import { AppDispatch } from "../store";
 
 const AuthPage = ({ type }: { type: "login" | "register" }) => {
+	const theme = useTheme();
 	const isLogin = type === "login";
 	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
@@ -69,26 +70,48 @@ const AuthPage = ({ type }: { type: "login" | "register" }) => {
 				display: "flex",
 				alignItems: "center",
 				justifyContent: "center",
-				minHeight: "100%",
+				minHeight: "100vh",
+				backgroundColor: theme.palette.background.default,
+				p: 2,
 			}}
 		>
 			<Box
 				sx={{
-					maxWidth: 700,
+					width: "100%",
+					maxWidth: 500,
 					display: "flex",
 					flexDirection: "column",
 					alignItems: "center",
 					justifyContent: "center",
-					padding: '120px 64px',
-					borderRadius: "32px",
-					boxShadow: 3,
+					p: { xs: 3, sm: 4 },
+					borderRadius: 4,
+					boxShadow: theme.shadows[4],
+					backgroundColor: theme.palette.background.paper,
 				}}
 			>
-				<Typography variant="h5" sx={{ textAlign: "center", mb: 2 }}>
-					{isLogin ? "Войти" : "Регистрация"}
+				<Typography
+					variant="h4"
+					sx={{
+						textAlign: "center",
+						mb: 3,
+						color: theme.palette.text.primary,
+						fontWeight: 600,
+					}}
+				>
+					{isLogin ? "Вход в систему" : "Создать аккаунт"}
 				</Typography>
 
-				<form onSubmit={authHandler} style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
+				<Box
+					component="form"
+					onSubmit={authHandler}
+					sx={{
+						width: "100%",
+						display: 'flex',
+						flexDirection: 'column',
+						gap: 2,
+						mb: 2,
+					}}
+				>
 					<CustomInput
 						label="Email"
 						placeholder="Введите email"
@@ -96,7 +119,10 @@ const AuthPage = ({ type }: { type: "login" | "register" }) => {
 						name="email"
 						onChange={handleChange}
 						value={userFormData.email}
+						required
+						fullWidth
 					/>
+
 					{!isLogin && (
 						<CustomInput
 							label="Имя пользователя"
@@ -105,8 +131,11 @@ const AuthPage = ({ type }: { type: "login" | "register" }) => {
 							name="username"
 							onChange={handleChange}
 							value={userFormData.username}
+							required
+							fullWidth
 						/>
 					)}
+
 					<CustomInput
 						label="Пароль"
 						placeholder="Введите пароль"
@@ -114,15 +143,44 @@ const AuthPage = ({ type }: { type: "login" | "register" }) => {
 						name="password"
 						onChange={handleChange}
 						value={userFormData.password}
+						required
+						fullWidth
 					/>
-					<CustomButton type="submit">{isLogin ? "Войти" : "Регистрация"}</CustomButton>
-				</form>
 
-				<Box sx={{ mt: 2 }}>
-					<NavLink to={isLogin ? "/register" : "/login"}>
-						{isLogin ? "Регистрация" : "Войти"}
-					</NavLink>
+					<CustomButton
+						type="submit"
+						fullWidth
+						sx={{
+							mt: 2,
+							py: 1.5,
+						}}
+					>
+						{isLogin ? "Войти" : "Зарегистрироваться"}
+					</CustomButton>
 				</Box>
+
+				<Typography
+					variant="body2"
+					sx={{
+						color: theme.palette.text.secondary,
+						textAlign: "center",
+					}}
+				>
+					{isLogin ? "Ещё нет аккаунта?" : "Уже есть аккаунт?"}{' '}
+					<NavLink
+						to={isLogin ? "/register" : "/login"}
+						style={{
+							color: theme.palette.primary.main,
+							textDecoration: "none",
+							fontWeight: 500,
+							'&:hover': {
+								textDecoration: "underline",
+							}
+						}}
+					>
+						{isLogin ? "Зарегистрироваться" : "Войти"}
+					</NavLink>
+				</Typography>
 			</Box>
 		</Box>
 	);

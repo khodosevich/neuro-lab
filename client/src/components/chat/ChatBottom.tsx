@@ -1,49 +1,79 @@
-import { Box, TextField } from '@mui/material';
+import { Box, TextField, useTheme, IconButton, Paper, useMediaQuery } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import { useDispatch } from 'react-redux';
+import { addBotMessage, addUserMessage } from '../../store/slices/chatSlice.ts';
+import { useState } from 'react';
+import { methods } from '../../api/methods.ts';
 
-const ChatBottom = ({ chatId }: { chatId: string }) => {
+const ChatBottom = ({ chatId }: { chatId: number }) => {
+	const theme = useTheme();
+	const isMobile = useMediaQuery('(max-width: 600px)');
+	const dispatch = useDispatch();
+	const [message, setMessage] = useState('');
+
+	const handleSend = async () => {
+		if (!message.trim()) return;
+
+		dispatch(addUserMessage(message.trim()));
+		setMessage('');
+
+		try {
+			const response = await methods.chat.newFetchToModel({ modelId: chatId, inputText: message });
+			dispatch(addBotMessage(response.data.output));
+		} catch (error) {
+			console.error(error);
+			dispatch(addBotMessage("Произошла ошибка при обработке запроса"));
+		}
+	};
+
 	return (
-		<Box sx={{
-			margin: '20px',
+		<Paper sx={{
+			p: isMobile ? 0.5 : 1,
+			borderRadius: 4,
+			m: isMobile ? 1 : 2,
+			boxShadow: theme.shadows[3],
+			position: 'sticky',
+			bottom: 0
 		}}>
 			<Box sx={{
-				display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-				backgroundColor: '#00000033', padding: '20px', borderRadius: '20px',
-
+				display: 'flex',
+				alignItems: 'center',
+				gap: 0.5
 			}}>
-				<Box sx={{
-					display: 'flex', alignItems: 'center', gap: '20px',
-					width: '100%', paddingRight: '10px',
-				}}>
-					<AddPhotoAlternateIcon sx={{
-						width: '35px',
-						height: '35px',
-					}}/>
-					<TextField
-						fullWidth
-						label="Введите сообщение"
-						variant="outlined"
-						sx={{
-							backgroundColor: '#2a2a2a',
-							borderRadius: '5px',
-							input: {
-								color: 'white',
-							},
-							label: {
-								color: 'white',
-								'&.Mui-focused': {
-									color: '#8a8a8a',
-								},
-							},
-						}}
-					/>
-				</Box>
-				<Box sx={{ display: 'flex' }}>
-					<SendIcon/>
-				</Box>
+				{!isMobile && (
+					<>
+						<IconButton size={isMobile ? "small" : "medium"}>
+							<AttachFileIcon fontSize={isMobile ? "small" : "medium"} />
+						</IconButton>
+					</>
+				)}
+
+				<TextField
+					fullWidth
+					placeholder="Введите сообщение..."
+					variant="outlined"
+					size={isMobile ? "small" : "medium"}
+					value={message}
+					onChange={e => setMessage(e.target.value)}
+					sx={{
+						'& .MuiOutlinedInput-root': {
+							borderRadius: 4,
+							backgroundColor: theme.palette.background.paper
+						}
+					}}
+				/>
+
+				<IconButton
+					color="primary"
+					sx={{ ml: 1 }}
+					size={isMobile ? "small" : "medium"}
+					onClick={() => {handleSend()}}
+				>
+					<SendIcon fontSize={isMobile ? "small" : "medium"} />
+				</IconButton>
 			</Box>
-		</Box>
+		</Paper>
 	);
 };
 

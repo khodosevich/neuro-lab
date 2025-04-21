@@ -11,6 +11,7 @@ import ModelTrainingTime from '../components/models/ModelTrainingTime.tsx';
 import ModelProductive from '../components/models/ModelProductive.tsx';
 
 const ModelPage = () => {
+
 	const { id } = useParams();
 	const dispatch = useDispatch<AppDispatch>();
 	const { models } = useSelector((state: RootState) => state.models);

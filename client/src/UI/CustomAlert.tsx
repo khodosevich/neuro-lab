@@ -1,4 +1,4 @@
-import { Snackbar, Alert } from '@mui/material';
+import { Snackbar, Alert, useTheme } from '@mui/material';
 import { AlertDate } from '../types/type.ts';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
@@ -12,6 +12,8 @@ const CustomAlert = () => {
 		dispatch(hideAlert());
 	};
 
+	const theme = useTheme();
+
 	return (
 		<Snackbar
 			open={isShowAlert}
@@ -24,7 +26,7 @@ const CustomAlert = () => {
 				variant="filled"
 				severity={type}
 				onClose={handleClose}
-				sx={{ width: '100%', maxWidth: 'calc(100% - 40px)' }}
+				sx={{ width: '100%', maxWidth: 'calc(100% - 40px)', color: theme.palette.text.primary }}
 			>
 				{message}
 			</Alert>

@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
-import Landing from '../components/Landing.tsx';
-import Technologies from '../components/Technologies.tsx';
+import Landing from '../components/home/Landing.tsx';
+import Technologies from '../components/home/Technologies.tsx';
 import Features from '../components/home/Features.tsx';
 import HowItWorks from '../components/home/HowItWork.tsx';
 import Testimonials from '../components/home/Testimonials.tsx';

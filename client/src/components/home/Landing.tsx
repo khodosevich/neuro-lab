@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
-import landingImg from '../assets/ai.jpg';
-import { CustomButton } from '../UI/CustomButton.tsx';
+import landingImg from '../../assets/ai.jpg';
+import { CustomButton } from '../../UI/CustomButton.tsx';
 import { NavLink } from 'react-router-dom';
 
 const Landing = () => {
@@ -19,7 +19,7 @@ const Landing = () => {
 					Данная платформа упрощает процесс обучения и развертывания нейронных моделей,
 					предоставление пользователям инструментов, необходимых для эффективного использования возможностей машинного обучения.
 				</Typography>
-				<CustomButton sx={{ marginTop: "20px", padding: 0 }}>
+				<CustomButton sx={{ marginTop: "20px", padding: 0, width: "320px" }}>
 					<NavLink style={{ display: "flex", paddingBlock: "14px",
 						alignItems: "center", justifyContent: "center",
 					}} to='/login'>

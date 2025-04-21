@@ -16,6 +16,7 @@ import DatasetsId from './pages/DatasetsId.tsx';
 import UpdateModelData from './pages/UpdateModelData.tsx';
 import Admin from './pages/Admin.tsx';
 import UpdateDataset from './pages/UpdateDataset.tsx';
+import { jwtDecode } from 'jwt-decode';
 
 export const ProtectedRoute = ({ isAuth, children }: { isAuth: boolean, children: JSX.Element }) => {
 	const [loading, setLoading] = useState(true);
@@ -42,9 +43,14 @@ export const ProtectedRoute = ({ isAuth, children }: { isAuth: boolean, children
 };
 
 export const AdminRoute = ({ children }: { children: JSX.Element }) => {
-	const isAdmin = useSelector((state: RootState) => state.user?.user?.role) === 'admin';
+	const token = localStorage.getItem('accessToken');
+	if (!token) {
+		return <Navigate to="/" />;
+	}
 
-	if (!isAdmin) {
+	const decoded: any = jwtDecode(token);
+
+	if (decoded.role !== 'admin') {
 		return <Navigate to="/" />;
 	}
 

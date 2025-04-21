@@ -59,6 +59,7 @@ export type ModelCommentType = {
 	model_id: number;
 	updated_at: string;
 	user_id: number;
+	username: string;
 }
 
 export type PerformanceDataType = {
@@ -76,7 +77,7 @@ export type DatasetsType = {
 	name: string,
 	description: string,
 	model_id: number,
-	dataset_url: string,
+	data_url: string,
 	created_at: string,
 	updated_at: string,
 }
@@ -102,6 +103,40 @@ export type UserType = {
 export type NewDatasetType = {
 	name: string;
 	description: string;
-	dataset_url: string;
+	data_url: string;
 	model_id: number;
+}
+
+export interface Note {
+	id: number;
+	user_id: number;
+	model_id: number;
+	title: string;
+	content: string;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface CreateNoteParams {
+	user_id: number;
+	model_id: number;
+	title: string;
+	content: string;
+}
+
+export interface UpdateNoteParams {
+	id: number;
+	user_id: number;
+	title?: string;
+	content?: string;
+}
+
+export interface GetNotesParams {
+	userId: number;
+	modelId: number;
+}
+
+export interface DeleteNoteParams {
+	id: number;
+	user_id: number;
 }
