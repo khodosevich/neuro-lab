@@ -228,7 +228,7 @@ const UpdateModelData = () => {
 						Редактирование модели
 					</Typography>
 					<Typography variant="body1" color="text.secondary">
-						ID: {newModelData?.id} | Последнее обновление: {new Date(newModelData?.updated_at).toLocaleDateString()}
+						ID: {newModelData?.id} | Модель создана: {new Date(currentModel?.created_at).toLocaleDateString()}
 					</Typography>
 				</Box>
 			</Box>

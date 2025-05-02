@@ -1,10 +1,15 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import api from '../../api/authMiddleware.ts';
 
 type Message = {
+	id?: number;
+	chat_id: string;
 	sender: 'user' | 'bot';
 	text: string;
 	timestamp: string;
+	model_id?: number;
 };
+
 type ChatState = {
 	messages: Message[];
 };
@@ -13,32 +18,65 @@ const initialState: ChatState = {
 	messages: [],
 };
 
+export const sendUserMessage = createAsyncThunk(
+	'chat/sendUserMessage',
+	async (message: Omit<Message, 'id' | 'timestamp'>, { rejectWithValue }) => {
+		try {
+			const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+			const response = await api.post('/chat/messages', { ...message, timestamp });
+			return response.data;
+		} catch (error) {
+			return rejectWithValue(error.response?.data || 'Failed to save message');
+		}
+	}
+);
+
+export const saveBotMessage = createAsyncThunk(
+	'chat/saveBotMessage',
+	async (message: Omit<Message, 'id' | 'timestamp'>, { rejectWithValue }) => {
+		try {
+			const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+			const response = await api.post('/chat/messages', { ...message, timestamp });
+			return response.data;
+		} catch (error) {
+			return rejectWithValue(error.response?.data || 'Failed to save bot message');
+		}
+	}
+);
+
+export const loadChatMessages = createAsyncThunk(
+	'chat/loadChatMessages',
+	async (chatId: string, { rejectWithValue }) => {
+		try {
+			const response = await api.get(`/chat/messages?chat_id=${chatId}`);
+			return response.data;
+		} catch (error) {
+			return rejectWithValue(error.response?.data || 'Failed to load messages');
+		}
+	}
+);
+
 const chatSlice = createSlice({
 	name: 'chat',
 	initialState,
 	reducers: {
-		addUserMessage: (state, action: PayloadAction<string>) => {
-			state.messages.push({
-				sender: 'user',
-				text: action.payload,
-				timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-			});
-		},
-		addBotMessage: (state, action: PayloadAction<string>) => {
-			state.messages.push({
-				sender: 'bot',
-				text: action.payload,
-				timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-			});
-		},
-		setMessages: (state, action: PayloadAction<Message[]>) => {
-			state.messages = action.payload;
-		},
 		clearChat: (state) => {
 			state.messages = [];
 		},
-	}
+	},
+	extraReducers: (builder) => {
+		builder
+			.addCase(sendUserMessage.fulfilled, (state, action: PayloadAction<Message>) => {
+				state.messages.push(action.payload);
+			})
+			.addCase(saveBotMessage.fulfilled, (state, action: PayloadAction<Message>) => {
+				state.messages.push(action.payload);
+			})
+			.addCase(loadChatMessages.fulfilled, (state, action) => {
+				state.messages = action.payload;
+			})
+	},
 });
 
-export const { addUserMessage, addBotMessage, setMessages, clearChat } = chatSlice.actions;
+export const { clearChat } = chatSlice.actions;
 export default chatSlice.reducer;

@@ -105,7 +105,7 @@ export const methods = {
 		},
 	},
 	chat: {
-		async newFetchToModel(data: { modelId: number, inputText: string }): Promise<void> {
+		async newFetchToModel(data: { modelId: number, inputText: string, chatId: string, userId: number }): Promise<void> {
 			return await api.post('/python/generate', data);
 		}
 	}

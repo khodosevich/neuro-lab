@@ -4,31 +4,43 @@ import { RootState } from '../../store';
 import NotesPanel from './NotesPanel';
 import PsychologyIcon from '@mui/icons-material/Psychology';
 import { keyframes } from '@emotion/react';
-import { useEffect } from 'react';
-import { clearChat } from '../../store/slices/chatSlice.ts';
+import { useEffect, useRef } from 'react';
+import { loadChatMessages, clearChat } from '../../store/slices/chatSlice.ts';
 
 const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 `;
 
 const ChatBody = ({ chatId }: { chatId: string }) => {
 	const theme = useTheme();
 	const isMobile = useMediaQuery('(max-width: 600px)');
 	const { models } = useSelector((state: RootState) => state.models);
-	const currentModel = models.find((model) => model.id === Number(chatId));
 	const { messages } = useSelector((state: RootState) => state.chat);
+	const currentModel = models.find((model) => model.id === Number(chatId));
 	const dispatch = useDispatch();
 
+	const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
 	useEffect(() => {
-		dispatch(clearChat())
-	}, [chatId]);
+		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+	}, [messages]);
+
+	useEffect(() => {
+		// Загружаем сообщения при монтировании
+		dispatch(loadChatMessages(chatId));
+
+		// Очищаем чат при размонтировании
+		return () => {
+			dispatch(clearChat());
+		};
+	}, [chatId, dispatch]);
 
 	return (
 		<Box sx={{
@@ -86,7 +98,7 @@ const ChatBody = ({ chatId }: { chatId: string }) => {
 					gap: 2,
 					pt: 2,
 				}}>
-					{messages.length > 0 && messages.map((message, index) => (
+					{messages.map((message, index) => (
 						<Box
 							key={index}
 							sx={{
@@ -125,7 +137,7 @@ const ChatBody = ({ chatId }: { chatId: string }) => {
 										               ? `transparent ${theme.palette.grey[800]} transparent transparent`
 										               : `transparent ${theme.palette.grey[100]} transparent transparent`,
 										transform: message.sender === 'user' ? 'none' : 'rotate(180deg)',
-									}
+									},
 								}}
 							>
 								<Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
@@ -142,11 +154,12 @@ const ChatBody = ({ chatId }: { chatId: string }) => {
 										       : theme.palette.text.secondary,
 									}}
 								>
-									{message.timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+									{message.timestamp}
 								</Typography>
 							</Box>
 						</Box>
 					))}
+					<div ref={messagesEndRef}/>
 				</Box>
 			</Box>
 		</Box>
