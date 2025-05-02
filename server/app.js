@@ -8,6 +8,7 @@ const commentsRoutes = require('./src/routes/comments');
 const datasets = require('./src/routes/datasets');
 const notesRoutes = require('./src/routes/notes');
 const pythonModels = require('./src/routes/pythonModels');
+const chatRouter = require('./src/routes/chatRouter');
 const authenticateToken = require('./src/middleware/authenticateToken');
 
 require('dotenv').config();
@@ -37,6 +38,7 @@ app.use('/comments', commentsRoutes);
 app.use('/datasets', datasets);
 app.use('/notes', notesRoutes);
 app.use('/python', pythonModels);
+app.use('/chat', chatRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

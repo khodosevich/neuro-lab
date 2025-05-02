@@ -115,9 +115,6 @@ router.put('/:id/role', authenticateToken, async (req, res) => {
 	const { id } = req.params;
 	const { role } = req.body;
 
-	console.log(id);
-	console.log(role);
-
 	if (!role) {
 		return res.status(400).json({ error: 'Role is required' });
 	}

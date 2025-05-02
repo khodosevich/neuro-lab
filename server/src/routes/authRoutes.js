@@ -11,7 +11,6 @@ const generateAccessToken = (user) => {
 };
 
 const generateRefreshToken = async (user) => {
-	console.log('generateRefreshToken', user);
 	const refreshToken = jwt.sign({ id: user.id, role: user.role }, process.env.REFRESH_SECRET, { expiresIn: '7d' });
 
 	await pool.query('INSERT INTO refresh_tokens (user_id, token) VALUES ($1, $2) ON CONFLICT (token) DO NOTHING', [user.id, refreshToken]);
