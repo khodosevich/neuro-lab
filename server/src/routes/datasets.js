@@ -2,6 +2,15 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../../src/utils/db'); // Подключение к БД
 
+router.get('/text-classification', async (req, res) => {
+	try {
+		const result = await pool.query('SELECT * FROM dataset_text_class LIMIT 100');
+		res.json(result.rows);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+});
+
 // Создание датасета
 router.post('/create', async (req, res) => {
 	const { name, description, data_url, model_id } = req.body;

@@ -109,4 +109,34 @@ router.get('/:id', async (req, res) => {
 	}
 });
 
+router.get('/metrics/:modelId', authenticateToken, async (req, res) => {
+	try {
+		const { modelId } = req.params;
+		const { period = '24h' } = req.query;
+
+		// Получаем агрегированную статистику
+		const stats = await pool.query(
+			`SELECT 
+         DATE_TRUNC('hour', request_time) as time_window,
+         COUNT(*) as request_count,
+         AVG(response_time_ms) as avg_response_time,
+         AVG(input_length) as avg_input_length,
+         AVG(output_length) as avg_output_length,
+         SUM(CASE WHEN success THEN 1 ELSE 0 END) as success_count,
+         SUM(CASE WHEN NOT success THEN 1 ELSE 0 END) as error_count
+       FROM model_metrics
+       WHERE model_id = $1 
+         AND request_time > NOW() - INTERVAL '${period}'
+       GROUP BY time_window
+       ORDER BY time_window ASC`,
+			[modelId]
+		);
+
+		res.json(stats.rows);
+	} catch (err) {
+		console.error('Error getting metrics:', err);
+		res.status(500).json({ error: 'Database error' });
+	}
+});
+
 module.exports = router;
