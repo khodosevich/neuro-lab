@@ -1,51 +1,66 @@
 import { Typography, Box, Paper, useTheme, Stack, Chip, Tooltip, IconButton } from '@mui/material';
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Label, Legend } from 'recharts';
-import { ModelTrainingTimeType } from '../../types/type.ts';
+import { Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Area, ComposedChart, ReferenceLine, Label } from 'recharts';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
-const ModelTrainingTime = ({
-	                           trainingTimeData,
-	                           onRefresh
-                           }: {
-	trainingTimeData: ModelTrainingTimeType[],
-	onRefresh?: () => void
-}) => {
+interface TrainingTimeProps {
+	trainingTimeData: Array<{
+		name: string;
+		time: number;
+		[key: string]: any;
+	}>;
+	onRefresh?: () => void;
+	title: string;
+}
+
+const ModelTrainingTime = ({ trainingTimeData, onRefresh, title }: TrainingTimeProps) => {
 	const theme = useTheme();
-	const maxTime = Math.max(...trainingTimeData.map(d => d.time));
-	const totalTime = trainingTimeData.reduce((sum, item) => sum + item.time, 0);
+	const maxTime = Math.max(...trainingTimeData.map(d => d.time), 1);
+	const avgTime = trainingTimeData.reduce((sum, item) => sum + item.time, 0) / trainingTimeData.length;
+	const gradientId = `timeGradient-${title.replace(/\s+/g, '-')}`;
 
 	return (
 		<Paper elevation={0} sx={{
-			p: 4,
-			borderRadius: 4,
+			p: 3,
+			borderRadius: 2,
 			bgcolor: 'background.paper',
 			border: `1px solid ${theme.palette.divider}`,
-			mb: 4,
-			position: 'relative'
+			mb: 3,
+			position: 'relative',
+			overflow: 'hidden'
 		}}>
-			<Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-				<Typography variant="h5" sx={{
-					fontWeight: 600,
+			<Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+				<Typography variant="h6" sx={{
 					display: 'flex',
 					alignItems: 'center',
-					gap: 1
+					gap: 1,
+					fontWeight: 600,
+					color: theme.palette.text.primary
 				}}>
-					<AccessTimeIcon color="primary" />
-					Время обучения модели
+					<AccessTimeIcon color="secondary" />
+					{title}
 				</Typography>
 
-				<Stack direction="row" spacing={2} alignItems="center">
+				<Stack direction="row" spacing={1} alignItems="center">
 					<Chip
-						label={`Общее время: ${totalTime.toFixed(1)} сек`}
+						label={`Среднее: ${avgTime.toFixed(1)} сек`}
 						color="secondary"
-						variant="outlined"
+						variant="filled"
 						size="small"
+						sx={{ fontWeight: 500 }}
 					/>
 					{onRefresh && (
 						<Tooltip title="Обновить данные">
-							<IconButton onClick={onRefresh} size="small">
+							<IconButton
+								onClick={onRefresh}
+								size="small"
+								sx={{
+									backgroundColor: theme.palette.action.hover,
+									'&:hover': {
+										backgroundColor: theme.palette.action.selected
+									}
+								}}
+							>
 								<RefreshIcon fontSize="small" />
 							</IconButton>
 						</Tooltip>
@@ -54,103 +69,100 @@ const ModelTrainingTime = ({
 			</Stack>
 
 			<Box sx={{
-				height: 400,
+				height: 350,
 				position: 'relative',
-				'& .recharts-cartesian-grid-vertical line': {
-					strokeDasharray: '3 3',
-					stroke: theme.palette.divider
-				},
-				'& .recharts-cartesian-grid-horizontal line': {
-					strokeDasharray: '3 3',
-					stroke: theme.palette.divider
+				'& .recharts-cartesian-grid line': {
+					stroke: theme.palette.divider,
+					opacity: 0.3
 				}
 			}}>
 				<ResponsiveContainer width="100%" height="100%">
-					<LineChart
-						data={trainingTimeData}
-						margin={{ top: 5, right: 20, bottom: 20, left: 20 }}
-					>
+					<ComposedChart data={trainingTimeData}>
+						<defs>
+							<linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+								<stop offset="5%" stopColor={theme.palette.secondary.main} stopOpacity={0.8}/>
+								<stop offset="95%" stopColor={theme.palette.secondary.main} stopOpacity={0.1}/>
+							</linearGradient>
+						</defs>
+
 						<CartesianGrid strokeDasharray="3 3" />
 						<XAxis
 							dataKey="name"
-							tick={{ fill: theme.palette.text.secondary }}
+							tick={{ fill: theme.palette.text.secondary, fontSize: 12 }}
 							tickMargin={10}
-						>
-							<Label
-								value="Эпохи обучения"
-								position="bottom"
-								offset={0}
-								style={{
-									fill: theme.palette.text.primary,
-									fontSize: '0.875rem'
-								}}
-							/>
-						</XAxis>
+							tickLine={false}
+						/>
 						<YAxis
-							domain={[0, maxTime * 1.1]}
+							domain={[0, maxTime * 1.2]}
 							tickFormatter={(value) => `${value} сек`}
-							tick={{ fill: theme.palette.text.secondary }}
+							tick={{ fill: theme.palette.text.secondary, fontSize: 12 }}
+							tickLine={false}
+						/>
+
+						<ReferenceLine
+							y={avgTime}
+							stroke={theme.palette.warning.main}
+							strokeDasharray="3 3"
 						>
 							<Label
-								value="Время (сек)"
-								angle={-90}
-								position="left"
-								offset={-10}
-								style={{
-									fill: theme.palette.text.primary,
-									fontSize: '0.875rem'
-								}}
+								value={`Среднее: ${avgTime.toFixed(1)}с`}
+								position="insideTopRight"
+								fill={theme.palette.warning.main}
 							/>
-						</YAxis>
+						</ReferenceLine>
+
 						<RechartsTooltip
 							formatter={(value: number) => [`${value} сек`, 'Время']}
-							labelFormatter={(label) => `Эпоха: ${label}`}
+							labelFormatter={(label) => `Период: ${label}`}
 							contentStyle={{
-								borderRadius: '12px',
-								border: `1px solid ${theme.palette.divider}`,
+								background: theme.palette.background.default,
+								borderColor: theme.palette.divider,
+								borderRadius: 8,
 								boxShadow: theme.shadows[2],
-								background: theme.palette.background.paper
+								fontSize: 14
+							}}
+							itemStyle={{
+								color: theme.palette.text.primary
 							}}
 						/>
-						<Legend
-							wrapperStyle={{
-								paddingTop: '20px'
+
+						<Area
+							type="monotone"
+							dataKey="time"
+							fill={`url(#${gradientId})`}
+							stroke={theme.palette.secondary.main}
+							strokeWidth={3}
+							fillOpacity={0.2}
+							activeDot={{
+								r: 6,
+								stroke: theme.palette.secondary.dark,
+								strokeWidth: 2,
+								fill: theme.palette.secondary.light
 							}}
+							name="Время ответа"
 						/>
+
 						<Line
 							type="monotone"
 							dataKey="time"
-							stroke={theme.palette.secondary.main}
-							strokeWidth={3}
+							stroke={theme.palette.secondary.dark}
+							strokeWidth={2}
 							dot={{
 								r: 4,
-								fill: theme.palette.secondary.light,
-								stroke: theme.palette.secondary.dark,
-								strokeWidth: 1
+								stroke: theme.palette.secondary.main,
+								strokeWidth: 2,
+								fill: theme.palette.background.paper
 							}}
 							activeDot={{
 								r: 6,
 								stroke: theme.palette.secondary.dark,
 								strokeWidth: 2,
-								fill: theme.palette.secondary.main
+								fill: theme.palette.secondary.light
 							}}
-							name="Время обучения"
+							name="Время ответа"
 						/>
-					</LineChart>
+					</ComposedChart>
 				</ResponsiveContainer>
-			</Box>
-
-			<Box sx={{
-				display: 'flex',
-				alignItems: 'center',
-				mt: 2,
-				color: theme.palette.text.secondary,
-				fontSize: '0.875rem'
-			}}>
-				<InfoOutlinedIcon fontSize="small" sx={{ mr: 1 }} />
-				<Typography variant="caption">
-					График показывает время обучения для каждой эпохи. Снижение времени может указывать на оптимизацию процесса.
-				</Typography>
 			</Box>
 		</Paper>
 	);

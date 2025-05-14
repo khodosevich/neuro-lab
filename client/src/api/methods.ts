@@ -57,6 +57,9 @@ export const methods = {
 		async getModelById(id: number) {
 			return await api.get(`/models/${id}`);
 		},
+		async modelMetrics(id: number) {
+			return await api.get(`/models/metrics/${id}?period=7d`);
+		},
 		comment: {
 			async createComment(comment: CreateModelCommentType) {
 				console.log(comment);
@@ -88,6 +91,9 @@ export const methods = {
 		},
 		async deleteDataset(id: number) {
 			return await api.delete(`/datasets/delete/${id}`);
+		},
+		async getList() {
+			return await api.get('/datasets/text-classification');
 		}
 	},
 	notes: {

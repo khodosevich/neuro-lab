@@ -70,6 +70,11 @@ const ModelCard = ({ model }: { model: ModelsData }) => {
 					sx={{
 						color: theme.palette.text.secondary,
 						mb: 2,
+						display: '-webkit-box',
+						WebkitLineClamp: 4,
+						WebkitBoxOrient: 'vertical',
+						overflow: 'hidden',
+						textOverflow: 'ellipsis',
 					}}
 				>
 					{model.description || 'Описание отсутствует'}

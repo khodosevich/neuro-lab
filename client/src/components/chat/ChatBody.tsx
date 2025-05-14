@@ -109,9 +109,9 @@ const ChatBody = ({ chatId }: { chatId: string }) => {
 						>
 							<Box
 								sx={{
-									maxWidth: isMobile ? '90%' : '70%',
-									p: 2,
-									borderRadius: 4,
+									maxWidth: isMobile ? '90%' : '80%',
+									p: '10px 20px',
+									borderRadius: '20px',
 									position: 'relative',
 									backgroundColor: message.sender === 'user'
 									                 ? theme.palette.primary.main
@@ -148,7 +148,7 @@ const ChatBody = ({ chatId }: { chatId: string }) => {
 									sx={{
 										display: 'block',
 										textAlign: message.sender === 'user' ? 'right' : 'left',
-										mt: 1,
+										mt: '4px',
 										color: message.sender === 'user'
 										       ? 'rgba(255,255,255,0.7)'
 										       : theme.palette.text.secondary,

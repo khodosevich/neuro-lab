@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import DatasetDescription from '../components/datasets/DatasetDescription.tsx';
 import DatasetsNotFound from '../components/datasets/DatasetsNotFound.tsx';
-import DatasetsActions from '../components/datasets/DatasetsActions.tsx';
 import DatasetsBody from '../components/datasets/DatasetsBody.tsx';
 
 const DatasetsId = () => {
@@ -21,8 +20,10 @@ const DatasetsId = () => {
 	return (
 		<Box className="container">
 			<DatasetDescription {...currentDataset} />
-			<DatasetsBody/>
-			<DatasetsActions {...currentDataset} />
+			{
+				Number(id) === 4 && <DatasetsBody/>
+			}
+			{/*<DatasetsActions {...currentDataset} />*/}
 		</Box>
 	);
 };

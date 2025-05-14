@@ -24,7 +24,8 @@ const Datasets = () => {
 			try {
 				const response = await methods.datasets.getDatasets();
 				dispatch(setDatasets(response.data));
-			} catch {
+			}
+			catch {
 				dispatch(showAlert({ isShowAlert: true, message: 'Ошибка сервера', type: AlertType.ERROR }));
 			}
 		};
@@ -44,13 +45,14 @@ const Datasets = () => {
 			dispatch(showAlert({
 				isShowAlert: true,
 				message: 'Датасет удален успешно',
-				type: AlertType.SUCCESS
+				type: AlertType.SUCCESS,
 			}));
-		} catch {
+		}
+		catch {
 			dispatch(showAlert({
 				isShowAlert: true,
 				message: 'Ошибка при удалении датасета',
-				type: AlertType.ERROR
+				type: AlertType.ERROR,
 			}));
 		}
 	};
@@ -59,13 +61,13 @@ const Datasets = () => {
 		<Box className="container" sx={{
 			paddingBlock: 5,
 			maxWidth: '1400px',
-			margin: '0 auto'
+			margin: '0 auto',
 		}}>
 			<Typography variant="h4" sx={{
 				marginBottom: 4,
 				textAlign: 'center',
 				fontWeight: '600',
-				color: theme.palette.text.primary
+				color: theme.palette.text.primary,
 			}}>
 				Список датасетов
 			</Typography>
@@ -82,8 +84,8 @@ const Datasets = () => {
 							transition: 'transform 0.2s, box-shadow 0.2s',
 							'&:hover': {
 								transform: 'translateY(-4px)',
-								boxShadow: theme.shadows[6]
-							}
+								boxShadow: theme.shadows[6],
+							},
 						}}>
 							<CardMedia
 								component="div"
@@ -93,10 +95,10 @@ const Datasets = () => {
 									display: 'flex',
 									alignItems: 'center',
 									justifyContent: 'center',
-									color: theme.palette.primary.contrastText
+									color: theme.palette.primary.contrastText,
 								}}
 							>
-								<DatasetIcon sx={{ fontSize: 60 }} />
+								<DatasetIcon sx={{ fontSize: 60 }}/>
 							</CardMedia>
 
 							<CardContent sx={{ flexGrow: 1 }}>
@@ -111,19 +113,26 @@ const Datasets = () => {
 									/>
 								</Box>
 
-								<Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+								<Typography variant="body2" color="text.secondary" sx={{
+									mb: 2,
+									display: '-webkit-box',
+									WebkitLineClamp: 4,
+									WebkitBoxOrient: 'vertical',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+								}}>
 									{dataset.description || 'Описание отсутствует'}
 								</Typography>
 
 								<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
 									<Chip
-										icon={<CalendarTodayIcon fontSize="small" />}
+										icon={<CalendarTodayIcon fontSize="small"/>}
 										label={new Date(dataset.created_at).toLocaleDateString()}
 										size="small"
 										variant="outlined"
 									/>
 									<Chip
-										icon={<AccessTimeIcon fontSize="small" />}
+										icon={<AccessTimeIcon fontSize="small"/>}
 										label={`Обновлен: ${new Date(dataset.updated_at).toLocaleDateString()}`}
 										size="small"
 										variant="outlined"
@@ -134,7 +143,7 @@ const Datasets = () => {
 							<CardActions sx={{
 								justifyContent: 'space-between',
 								padding: '16px',
-								borderTop: `1px solid ${theme.palette.divider}`
+								borderTop: `1px solid ${theme.palette.divider}`,
 							}}>
 								{isAdmin ? (
 									<>
@@ -167,7 +176,7 @@ const Datasets = () => {
 										 fullWidth
 										 sx={{
 											 py: 1,
-											 borderRadius: '6px'
+											 borderRadius: '6px',
 										 }}
 									 >
 										 Подробнее
@@ -194,23 +203,23 @@ const Datasets = () => {
 								transition: 'all 0.2s',
 								'&:hover': {
 									borderColor: theme.palette.primary.main,
-									backgroundColor: theme.palette.action.hover
-								}
+									backgroundColor: theme.palette.action.hover,
+								},
 							}}
 						>
 							<CardContent sx={{
 								display: 'flex',
 								flexDirection: 'column',
 								alignItems: 'center',
-								textAlign: 'center'
+								textAlign: 'center',
 							}}>
 								<Avatar sx={{
 									bgcolor: theme.palette.primary.light,
 									width: 56,
 									height: 56,
-									mb: 2
+									mb: 2,
 								}}>
-									<AddIcon fontSize="large" />
+									<AddIcon fontSize="large"/>
 								</Avatar>
 								<Typography variant="subtitle1" color="text.primary">
 									Добавить новый датасет
@@ -224,7 +233,7 @@ const Datasets = () => {
 				)}
 			</Grid>
 
-			<CreateNewDataset newDataset={newDataset} setNewDataset={setNewDataset} />
+			<CreateNewDataset newDataset={newDataset} setNewDataset={setNewDataset}/>
 		</Box>
 	);
 };

@@ -1,134 +1,147 @@
 import { Typography, Box, Paper, useTheme, Stack, Chip } from '@mui/material';
-import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
-import { PerformanceDataType } from '../../types/type.ts';
+import { Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart, Area, ReferenceLine, Label } from 'recharts';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
-const ModelProductive = ({ performanceData }: { performanceData: PerformanceDataType[] }) => {
+interface ProductiveProps {
+	performanceData: Array<{
+		name: string;
+		accuracy: number;
+		[key: string]: any;
+	}>;
+	title: string;
+}
+
+const ModelProductive = ({ performanceData, title }: ProductiveProps) => {
 	const theme = useTheme();
-	const maxAccuracy = Math.max(...performanceData.map(d => d.accuracy));
 	const lastAccuracy = performanceData[performanceData.length - 1]?.accuracy || 0;
+	const avgAccuracy = performanceData.reduce((sum, item) => sum + item.accuracy, 0) / performanceData.length;
+	const gradientId = `accuracyGradient-${title.replace(/\s+/g, '-')}`;
 
 	return (
 		<Paper elevation={0} sx={{
-			p: 4,
-			borderRadius: 4,
+			p: 3,
+			borderRadius: 2,
 			bgcolor: 'background.paper',
 			border: `1px solid ${theme.palette.divider}`,
-			mb: 4
+			mb: 3,
+			position: 'relative',
+			overflow: 'hidden'
 		}}>
-			<Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-				<Typography variant="h5" sx={{
-					fontWeight: 600,
+			<Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+				<Typography variant="h6" sx={{
 					display: 'flex',
 					alignItems: 'center',
-					gap: 1
+					gap: 1,
+					fontWeight: 600,
+					color: theme.palette.text.primary
 				}}>
 					<TrendingUpIcon color="primary" />
-					Продуктивность модели
+					{title}
 				</Typography>
-
 				<Chip
-					label={`Точность: ${(lastAccuracy * 100).toFixed(1)}%`}
+					label={`Текущая: ${(lastAccuracy * 100).toFixed(1)}%`}
 					color="primary"
-					variant="outlined"
+					variant="filled"
 					size="small"
+					sx={{ fontWeight: 500 }}
 				/>
 			</Stack>
 
 			<Box sx={{
-				height: 400,
+				height: 350,
 				position: 'relative',
-				'& .recharts-cartesian-grid-vertical line': {
-					strokeDasharray: '3 3',
-					stroke: theme.palette.divider
-				},
-				'& .recharts-cartesian-grid-horizontal line': {
-					strokeDasharray: '3 3',
-					stroke: theme.palette.divider
+				'& .recharts-cartesian-grid line': {
+					stroke: theme.palette.divider,
+					opacity: 0.3
 				}
 			}}>
 				<ResponsiveContainer width="100%" height="100%">
-					<LineChart
-						data={performanceData}
-						margin={{ top: 5, right: 20, bottom: 20, left: 20 }}
-					>
+					<ComposedChart data={performanceData}>
+						<defs>
+							<linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+								<stop offset="5%" stopColor={theme.palette.primary.main} stopOpacity={0.8}/>
+								<stop offset="95%" stopColor={theme.palette.primary.main} stopOpacity={0.1}/>
+							</linearGradient>
+						</defs>
+
 						<CartesianGrid strokeDasharray="3 3" />
 						<XAxis
 							dataKey="name"
-							tick={{ fill: theme.palette.text.secondary }}
+							tick={{ fill: theme.palette.text.secondary, fontSize: 12 }}
 							tickMargin={10}
-						>
-							<Label
-								value="Эпохи обучения"
-								position="bottom"
-								offset={0}
-								style={{
-									fill: theme.palette.text.primary,
-									fontSize: '0.875rem'
-								}}
-							/>
-						</XAxis>
+							tickLine={false}
+						/>
 						<YAxis
-							domain={[0, maxAccuracy * 1.1]}
 							tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
-							tick={{ fill: theme.palette.text.secondary }}
+							tick={{ fill: theme.palette.text.secondary, fontSize: 12 }}
+							tickLine={false}
+							domain={[0, 1]}
+						/>
+
+						<ReferenceLine
+							y={avgAccuracy}
+							stroke={theme.palette.warning.main}
+							strokeDasharray="3 3"
 						>
 							<Label
-								value="Точность"
-								angle={-90}
-								position="left"
-								offset={-10}
-								style={{
-									fill: theme.palette.text.primary,
-									fontSize: '0.875rem'
-								}}
+								value={`Среднее: ${(avgAccuracy * 100).toFixed(1)}%`}
+								position="insideTopRight"
+								fill={theme.palette.warning.main}
 							/>
-						</YAxis>
+						</ReferenceLine>
+
 						<Tooltip
 							formatter={(value: number) => [`${(value * 100).toFixed(2)}%`, 'Точность']}
-							labelFormatter={(label) => `Эпоха: ${label}`}
+							labelFormatter={(label) => `Период: ${label}`}
 							contentStyle={{
-								borderRadius: '12px',
-								border: `1px solid ${theme.palette.divider}`,
+								background: theme.palette.background.default,
+								borderColor: theme.palette.divider,
+								borderRadius: 8,
 								boxShadow: theme.shadows[2],
-								background: theme.palette.background.paper
+								fontSize: 14
+							}}
+							itemStyle={{
+								color: theme.palette.text.primary
 							}}
 						/>
-						<Legend
-							wrapperStyle={{
-								paddingTop: '20px'
-							}}
-						/>
-						<Line
+
+						<Area
 							type="monotone"
 							dataKey="accuracy"
+							fill={`url(#${gradientId})`}
 							stroke={theme.palette.primary.main}
 							strokeWidth={3}
-							dot={{ r: 4, fill: theme.palette.primary.light }}
+							fillOpacity={0.2}
 							activeDot={{
 								r: 6,
 								stroke: theme.palette.primary.dark,
 								strokeWidth: 2,
-								fill: theme.palette.primary.main
+								fill: theme.palette.primary.light
 							}}
 							name="Точность"
 						/>
-					</LineChart>
-				</ResponsiveContainer>
-			</Box>
 
-			<Box sx={{
-				display: 'flex',
-				alignItems: 'center',
-				mt: 2,
-				color: theme.palette.text.secondary,
-				fontSize: '0.875rem'
-			}}>
-				<InfoOutlinedIcon fontSize="small" sx={{ mr: 1 }} />
-				<Typography variant="caption">
-					График показывает изменение точности модели в процессе обучения
-				</Typography>
+						<Line
+							type="monotone"
+							dataKey="accuracy"
+							stroke={theme.palette.primary.dark}
+							strokeWidth={2}
+							dot={{
+								r: 4,
+								stroke: theme.palette.primary.main,
+								strokeWidth: 2,
+								fill: theme.palette.background.paper
+							}}
+							activeDot={{
+								r: 6,
+								stroke: theme.palette.primary.dark,
+								strokeWidth: 2,
+								fill: theme.palette.primary.light
+							}}
+							name="Точность"
+						/>
+					</ComposedChart>
+				</ResponsiveContainer>
 			</Box>
 		</Paper>
 	);
